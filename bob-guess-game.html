@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Guess Bob's Score</title>
+<style>
+  html, body {
+    margin: 0; padding: 0;
+    background: #0e1525;
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: #e8ecf5;
+  }
+  body {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 2rem 1rem;
+    min-height: calc(100vh - 4rem);
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  .header h1 {
+    margin: 0 0 0.5rem;
+    font-size: 24px; font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .header p {
+    margin: 0;
+    font-size: 14px;
+    color: #a0a8bd;
+  }
+  .header p code {
+    background: #1d2640;
+    color: #5fb8d4;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+  }
+
+  .stage {
+    width: 900px; max-width: 100%;
+    background: #161e30;
+    border: 1px solid rgba(95, 184, 212, 0.18);
+    border-radius: 12px;
+    padding: 1.75rem 1.5rem;
+  }
+
+  /* Characters */
+  .characters {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    padding: 0 2rem;
+    margin-bottom: 1rem;
+    min-height: 160px;
+  }
+  .character {
+    position: relative;
+    width: 200px;
+    text-align: center;
+  }
+  .character .face {
+    font-size: 72px;
+    line-height: 1;
+    display: inline-block;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .character .face.pulse { animation: pulse 0.4s ease; }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.18); }
+  }
+  .character .name {
+    margin-top: 6px;
+    font-size: 12px;
+    color: #a0a8bd;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+
+  /* Speech bubbles */
+  .bubble {
+    position: absolute;
+    padding: 9px 14px;
+    background: #1d2640;
+    border: 1px solid rgba(95, 184, 212, 0.4);
+    border-radius: 14px;
+    font-size: 16px;
+    font-weight: 600;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateY(6px) scale(0.94);
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .bubble.show { opacity: 1; transform: translateY(0) scale(1); }
+  .bubble.you {
+    top: 4px; right: -20px;
+    background: rgba(95, 184, 212, 0.14);
+    border-color: rgba(95, 184, 212, 0.5);
+    color: #5fb8d4;
+  }
+  .bubble.you::after {
+    content: "";
+    position: absolute;
+    left: 24px; bottom: -7px;
+    width: 11px; height: 11px;
+    background: rgba(95, 184, 212, 0.14);
+    border-right: 1px solid rgba(95, 184, 212, 0.5);
+    border-bottom: 1px solid rgba(95, 184, 212, 0.5);
+    transform: rotate(45deg);
+  }
+  .bubble.bob {
+    top: 4px; left: -20px;
+    background: rgba(240, 198, 116, 0.14);
+    border-color: rgba(240, 198, 116, 0.5);
+    color: #f0c674;
+  }
+  .bubble.bob::after {
+    content: "";
+    position: absolute;
+    right: 24px; bottom: -7px;
+    width: 11px; height: 11px;
+    background: rgba(240, 198, 116, 0.14);
+    border-right: 1px solid rgba(240, 198, 116, 0.5);
+    border-bottom: 1px solid rgba(240, 198, 116, 0.5);
+    transform: rotate(45deg);
+  }
+  .bubble.bob.found {
+    background: rgba(109, 195, 149, 0.18);
+    border-color: rgba(109, 195, 149, 0.6);
+    color: #6dc395;
+    font-size: 18px;
+  }
+  .bubble.bob.found::after {
+    background: rgba(109, 195, 149, 0.18);
+    border-right-color: rgba(109, 195, 149, 0.6);
+    border-bottom-color: rgba(109, 195, 149, 0.6);
+  }
+  .bubble.bob.invalid {
+    background: rgba(217, 106, 106, 0.14);
+    border-color: rgba(217, 106, 106, 0.5);
+    color: #d96a6a;
+    font-size: 14px;
+  }
+  .bubble.bob.invalid::after {
+    background: rgba(217, 106, 106, 0.14);
+    border-right-color: rgba(217, 106, 106, 0.5);
+    border-bottom-color: rgba(217, 106, 106, 0.5);
+  }
+
+  /* Number line */
+  .nl-wrap {
+    margin: 0.75rem 0 1.25rem;
+  }
+  .nl-label {
+    font-size: 12px;
+    color: #a0a8bd;
+    text-align: center;
+    margin-bottom: 6px;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    transition: color 0.4s ease;
+  }
+  .nl-label.success { color: #6dc395; }
+  .number-line {
+    position: relative;
+    height: 36px;
+    margin: 0 auto;
+    max-width: 720px;
+  }
+  .nl-track {
+    position: absolute;
+    top: 14px; left: 0; right: 0;
+    height: 4px;
+    background: #1d2640;
+    border-radius: 2px;
+  }
+  .nl-range {
+    position: absolute;
+    top: 12px;
+    height: 8px;
+    background: #5fb8d4;
+    border-radius: 4px;
+    transition: left 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+                width 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+                background 0.4s ease;
+  }
+  .nl-range.success { background: #6dc395; }
+  .nl-marks {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+  }
+  .nl-guess-mark {
+    position: absolute;
+    top: 8px;
+    width: 2px; height: 16px;
+    background: rgba(240, 198, 116, 0.5);
+    transform: translateX(-50%);
+    opacity: 0;
+    animation: markIn 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+  @keyframes markIn {
+    from { opacity: 0; transform: translateX(-50%) scaleY(0); }
+    to { opacity: 0.7; transform: translateX(-50%) scaleY(1); }
+  }
+  .nl-guess-mark.latest {
+    background: #f0c674;
+    opacity: 1;
+    width: 3px;
+    height: 22px;
+    top: 5px;
+  }
+  .nl-tick {
+    position: absolute;
+    top: 24px;
+    transform: translateX(-50%);
+    font-size: 10px;
+    color: #6b7390;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+  }
+
+  /* Input controls */
+  .controls {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+  .controls label {
+    font-size: 13px;
+    color: #a0a8bd;
+  }
+  .controls input[type="number"] {
+    width: 100px;
+    height: 38px;
+    padding: 0 12px;
+    font-size: 16px;
+    font-family: inherit;
+    font-weight: 600;
+    background: #0e1525;
+    color: #5fb8d4;
+    border: 1px solid rgba(95, 184, 212, 0.3);
+    border-radius: 6px;
+    outline: none;
+    text-align: center;
+  }
+  .controls input[type="number"]:focus {
+    border-color: #5fb8d4;
+    box-shadow: 0 0 0 2px rgba(95, 184, 212, 0.18);
+  }
+  .controls input[type="number"]:disabled {
+    opacity: 0.4;
+  }
+  .btn {
+    height: 38px;
+    padding: 0 18px;
+    font-size: 14px;
+    font-family: inherit;
+    font-weight: 500;
+    background: #5fb8d4;
+    color: #0e1525;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.05s;
+  }
+  .btn:hover { background: #7ec6dd; }
+  .btn:active { transform: scale(0.97); }
+  .btn:disabled {
+    background: #1d2640;
+    color: #6b7390;
+    cursor: not-allowed;
+  }
+  .btn:disabled:hover { background: #1d2640; }
+  .btn.secondary {
+    background: transparent;
+    color: #a0a8bd;
+    border: 1px solid rgba(160, 168, 189, 0.3);
+  }
+  .btn.secondary:hover { background: #1d2640; color: #e8ecf5; }
+
+  /* Stats row */
+  .stats {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    font-size: 13px;
+  }
+  .stat {
+    padding: 6px 14px;
+    background: #1d2640;
+    border-radius: 6px;
+    color: #a0a8bd;
+  }
+  .stat strong {
+    color: #e8ecf5;
+    font-variant-numeric: tabular-nums;
+    margin-left: 4px;
+  }
+  .stat.victory {
+    background: rgba(109, 195, 149, 0.14);
+    color: #6dc395;
+  }
+  .stat.victory strong { color: #6dc395; }
+
+  /* Final hint card */
+  .hint {
+    margin-top: 1.5rem;
+    padding: 12px 16px;
+    background: #1d2640;
+    border: 1px solid rgba(95, 184, 212, 0.18);
+    border-left: 2px solid #5fb8d4;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #a0a8bd;
+    line-height: 1.55;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .hint.show { opacity: 1; transform: translateY(0); }
+  .hint code {
+    background: #0e1525;
+    color: #5fb8d4;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Guess Bob's score</h1>
+  <p>Bob picked a number between <code>0</code> and <code>100</code>. Guess it in as few tries as you can.</p>
+</div>
+
+<div class="stage">
+
+  <div class="characters">
+    <div class="character">
+      <div class="face" id="you-face">🤔</div>
+      <div class="name">YOU</div>
+      <div class="bubble you" id="bubble-you"></div>
+    </div>
+    <div class="character">
+      <div class="face" id="bob-face">😏</div>
+      <div class="name">BOB</div>
+      <div class="bubble bob" id="bubble-bob"></div>
+    </div>
+  </div>
+
+  <div class="nl-wrap">
+    <div class="nl-label" id="nl-label">Possible scores: [0, 100]</div>
+    <div class="number-line" id="number-line">
+      <div class="nl-track"></div>
+      <div class="nl-range" id="nl-range" style="left: 0%; width: 100%;"></div>
+      <div class="nl-marks" id="nl-marks"></div>
+      <div class="nl-tick" style="left: 0%;">0</div>
+      <div class="nl-tick" style="left: 25%;">25</div>
+      <div class="nl-tick" style="left: 50%;">50</div>
+      <div class="nl-tick" style="left: 75%;">75</div>
+      <div class="nl-tick" style="left: 100%;">100</div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <label for="guess-input">Your guess:</label>
+    <input type="number" id="guess-input" min="0" max="100" placeholder="0–100" />
+    <button class="btn" id="guess-btn">Guess</button>
+    <button class="btn secondary" id="reset-btn">New game</button>
+  </div>
+
+  <div class="stats">
+    <div class="stat">Guesses: <strong id="stat-count">0</strong></div>
+    <div class="stat">Optimal max: <strong>7</strong></div>
+    <div class="stat" id="stat-range">Range size: <strong>101</strong></div>
+  </div>
+
+  <div class="hint" id="hint"></div>
+
+</div>
+
+<script>
+(function() {
+  const youFace = document.getElementById('you-face');
+  const bobFace = document.getElementById('bob-face');
+  const bubbleYou = document.getElementById('bubble-you');
+  const bubbleBob = document.getElementById('bubble-bob');
+  const nlRange = document.getElementById('nl-range');
+  const nlMarks = document.getElementById('nl-marks');
+  const nlLabel = document.getElementById('nl-label');
+  const guessInput = document.getElementById('guess-input');
+  const guessBtn = document.getElementById('guess-btn');
+  const resetBtn = document.getElementById('reset-btn');
+  const statCount = document.getElementById('stat-count');
+  const statRange = document.getElementById('stat-range');
+  const hint = document.getElementById('hint');
+
+  // Bob's faces, getting progressively more rattled
+  const BOB_FACES = ['😏', '😏', '🙂', '🤨', '😐', '😟', '😨', '🤯'];
+
+  let target = 0;
+  let lo = 0, hi = 100;
+  let guessCount = 0;
+  let gameOver = false;
+
+  function newGame() {
+    target = 67;
+    lo = 0; hi = 100;
+    guessCount = 0;
+    gameOver = false;
+    nlMarks.innerHTML = '';
+    nlRange.classList.remove('success');
+    nlRange.style.left = '0%';
+    nlRange.style.width = '100%';
+    nlLabel.classList.remove('success');
+    nlLabel.textContent = 'Possible scores: [0, 100]';
+    statCount.textContent = '0';
+    statRange.firstChild.textContent = 'Range size: ';
+    statRange.querySelector('strong').textContent = '101';
+    statRange.classList.remove('victory');
+    bubbleYou.classList.remove('show');
+    bubbleBob.classList.remove('show', 'found', 'invalid');
+    youFace.textContent = '🤔';
+    bobFace.textContent = '😏';
+    hint.classList.remove('show');
+    guessInput.value = '';
+    guessInput.disabled = false;
+    guessBtn.disabled = false;
+    guessInput.focus();
+  }
+
+  function pulse(el) {
+    el.classList.remove('pulse');
+    void el.offsetWidth;
+    el.classList.add('pulse');
+  }
+
+  function showBubble(bubble, text, extraClass) {
+    bubble.classList.remove('show', 'found', 'invalid');
+    void bubble.offsetWidth;
+    bubble.textContent = text;
+    if (extraClass) bubble.classList.add(extraClass);
+    bubble.classList.add('show');
+  }
+
+  function addGuessMark(value, isLatest) {
+    // Demote previous "latest" marks
+    nlMarks.querySelectorAll('.latest').forEach(m => m.classList.remove('latest'));
+    const mark = document.createElement('div');
+    mark.className = 'nl-guess-mark' + (isLatest ? ' latest' : '');
+    mark.style.left = value + '%';
+    nlMarks.appendChild(mark);
+  }
+
+  function makeGuess() {
+    if (gameOver) return;
+    const raw = guessInput.value.trim();
+    if (raw === '') {
+      showBubble(bubbleBob, 'Type a number first!', 'invalid');
+      return;
+    }
+    const guess = Number(raw);
+    if (!Number.isInteger(guess) || guess < 0 || guess > 100) {
+      showBubble(bubbleBob, 'It has to be 0-100, integer.', 'invalid');
+      return;
+    }
+
+    // Honest answer regardless of whether guess is in the current range
+    // (Bob always tells the truth about his score vs your guess)
+    guessCount++;
+    statCount.textContent = guessCount;
+
+    showBubble(bubbleYou, `Is it ${guess}?`);
+    pulse(youFace);
+
+    addGuessMark(guess, true);
+
+    // Slight delay before Bob responds, to make it feel like a conversation
+    setTimeout(() => {
+      if (guess === target) {
+        // Found!
+        gameOver = true;
+        const bobIdx = Math.min(BOB_FACES.length - 1, guessCount);
+        bobFace.textContent = guessCount <= 7 ? '🤯' : '😅';
+        pulse(bobFace);
+        showBubble(bubbleBob, `Yes! ${target}!`, 'found');
+        nlRange.classList.add('success');
+        nlRange.style.left = target + '%';
+        nlRange.style.width = '0.6%';
+        nlLabel.classList.add('success');
+        nlLabel.textContent = `Bob's score = ${target}`;
+        statRange.classList.add('victory');
+        statRange.firstChild.textContent = 'You won in: ';
+        statRange.querySelector('strong').textContent = guessCount + ' guess' + (guessCount === 1 ? '' : 'es');
+        guessInput.disabled = true;
+        guessBtn.disabled = true;
+        showHint(guessCount);
+      } else if (guess < target) {
+        // Update range only if guess was within current possible range
+        if (guess >= lo) lo = guess + 1;
+        const bobIdx = Math.min(BOB_FACES.length - 1, Math.floor(guessCount * 1.2));
+        bobFace.textContent = BOB_FACES[bobIdx];
+        pulse(bobFace);
+        showBubble(bubbleBob, 'Higher!');
+        updateRange();
+      } else {
+        if (guess <= hi) hi = guess - 1;
+        const bobIdx = Math.min(BOB_FACES.length - 1, Math.floor(guessCount * 1.2));
+        bobFace.textContent = BOB_FACES[bobIdx];
+        pulse(bobFace);
+        showBubble(bubbleBob, 'Lower!');
+        updateRange();
+      }
+    }, 350);
+
+    guessInput.value = '';
+    guessInput.focus();
+  }
+
+  function updateRange() {
+    nlRange.style.left = lo + '%';
+    nlRange.style.width = Math.max(0.5, hi - lo) + '%';
+    nlLabel.textContent = `Possible scores: [${lo}, ${hi}]`;
+    statRange.querySelector('strong').textContent = (hi - lo + 1);
+  }
+
+  function showHint(count) {
+    let msg;
+    if (count <= 7) {
+      msg = `🎉 Solved in ${count} guess${count === 1 ? '' : 'es'}. Optimal binary search needs ⌈log₂(101)⌉ = 7 in the worst case — you're at or below that.`;
+    } else if (count <= 10) {
+      msg = `Solved in ${count} guesses. Binary search would have found it in at most 7. Try guessing the midpoint of the current range each time.`;
+    } else {
+      msg = `Solved in ${count} guesses. Binary search guarantees 7 or fewer — always guess the middle of the current <code>[lo, hi]</code> range.`;
+    }
+    hint.innerHTML = msg;
+    hint.classList.add('show');
+  }
+
+  guessBtn.addEventListener('click', makeGuess);
+  resetBtn.addEventListener('click', newGame);
+  guessInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); makeGuess(); }
+  });
+
+  newGame();
+})();
+</script>
+
+</body>
+</html>
