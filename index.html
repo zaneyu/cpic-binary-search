@@ -260,9 +260,90 @@
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
-    padding: 1.5rem 1.25rem 1rem;
+    padding: 1.25rem 1.25rem 1rem;
     margin: 1rem 0;
     overflow-x: auto;
+  }
+  .curve-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 8px;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+  .curve-label {
+    letter-spacing: 0.04em;
+  }
+  .curve-toggle {
+    display: inline-flex; align-items: center; gap: 6px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .curve-toggle input {
+    width: 12px; height: 12px;
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
+  .monotonicity-curve {
+    position: relative;
+    height: 56px;
+    margin-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .curve-col {
+    position: absolute;
+    bottom: 0;
+    width: 100%; /* set inline as percentage */
+    transition: opacity 0.3s ease, background 0.3s ease;
+  }
+  .curve-col.true-region {
+    height: 38px;
+    background: rgba(109, 195, 149, 0.35);
+    border-top: 1.5px solid var(--success);
+  }
+  .curve-col.false-region {
+    height: 18px;
+    background: rgba(217, 106, 106, 0.28);
+    border-top: 1.5px solid var(--danger);
+  }
+  .curve-col.unknown {
+    height: 14px;
+    background: var(--surface-muted);
+    border-top: 1px dashed var(--border-strong);
+    opacity: 0.6;
+  }
+  .monotonicity-curve.revealed .curve-col.unknown {
+    opacity: 1;
+  }
+  /* When not revealed, only probed columns are bright; unknown is faded */
+  .monotonicity-curve:not(.revealed) .curve-col.probed {
+    box-shadow: 0 0 0 1.5px var(--highlight) inset;
+  }
+  .curve-axis-label {
+    position: absolute;
+    left: 4px; top: 2px;
+    font-size: 10px;
+    color: var(--text-hint);
+    pointer-events: none;
+  }
+  .curve-axis-label.bottom { top: auto; bottom: 2px; }
+  .curve-true-label {
+    position: absolute;
+    top: 16px; left: 6px;
+    font-size: 10px;
+    color: var(--success);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    pointer-events: none;
+  }
+  .curve-false-label {
+    position: absolute;
+    bottom: 4px; left: 6px;
+    font-size: 10px;
+    color: var(--danger);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    pointer-events: none;
   }
   .number-line {
     position: relative;
@@ -661,6 +742,14 @@ return x * x >= 50;</textarea>
   </div>
 
   <div class="number-line-wrap">
+    <div class="curve-header">
+      <span class="curve-label">check(x) over the answer space</span>
+      <label class="curve-toggle">
+        <input type="checkbox" id="curve-reveal" />
+        <span>Reveal full curve</span>
+      </label>
+    </div>
+    <div class="monotonicity-curve" id="monotonicity-curve"></div>
     <div class="number-line" id="number-line"></div>
   </div>
 
@@ -1264,6 +1353,8 @@ return x * x >= 50;</textarea>
   const resetBtn = document.getElementById('reset-btn');
   const speedInput = document.getElementById('speed');
   const numberLine = document.getElementById('number-line');
+  const monoCurve = document.getElementById('monotonicity-curve');
+  const curveReveal = document.getElementById('curve-reveal');
   const lowEl = document.getElementById('low-val');
   const midEl = document.getElementById('mid-val');
   const highEl = document.getElementById('high-val');
@@ -1287,6 +1378,7 @@ return x * x >= 50;</textarea>
   let autoTimer = null;
   let history = [];
   let trueGoodLo = null, trueGoodHi = null; // revealed gradually
+  let probedValues = new Map(); // x -> boolean (check result), tracks what we've actually probed
 
   // ============================================================
   // Setup
@@ -1336,8 +1428,78 @@ return x * x >= 50;</textarea>
   function setProblem(key) {
     problemKey = key;
     problemButtons.forEach(b => b.classList.toggle('active', b.dataset.problem === key));
+    // Clear stale state BEFORE rebuilding UI, so curve doesn't render with stale probes
+    probedValues = new Map();
+    if (curveReveal) curveReveal.checked = false;
     renderProblemUI();
     reset();
+  }
+
+  // ============================================================
+  // Monotonicity curve rendering
+  // ============================================================
+  // For each integer x in [initialLo, initialHi], compute check(x) and render a column.
+  // - Columns the search has probed: bright, with highlight outline
+  // - Columns not yet probed: faded (or hidden), unless "Reveal full curve" is on
+  // Direction matters: for 'min', good x's form a suffix (the right side is true).
+  // For 'max', good x's form a prefix (the left side is true).
+  function renderCurve() {
+    monoCurve.innerHTML = '';
+    if (parsedParams === null) return;
+
+    const span = initialHi - initialLo;
+    if (span < 0) return;
+
+    // Cap the number of columns to avoid DOM explosion on huge ranges.
+    // For ranges up to 200 we render every integer; beyond that we sample.
+    const MAX_COLS = 200;
+    let stride = 1;
+    if (span + 1 > MAX_COLS) stride = Math.ceil((span + 1) / MAX_COLS);
+    const numCols = Math.ceil((span + 1) / stride);
+    const colWidthPct = 100 / numCols;
+
+    const revealed = curveReveal.checked;
+    monoCurve.classList.toggle('revealed', revealed);
+
+    // Annotations (true / false labels)
+    if (revealed || probedValues.size > 0) {
+      const tl = document.createElement('div');
+      tl.className = 'curve-true-label';
+      tl.textContent = 'true';
+      monoCurve.appendChild(tl);
+      const fl = document.createElement('div');
+      fl.className = 'curve-false-label';
+      fl.textContent = 'false';
+      monoCurve.appendChild(fl);
+    }
+
+    const check = getCheck();
+    for (let i = 0; i < numCols; i++) {
+      const x = initialLo + i * stride;
+      if (x > initialHi) break;
+      const col = document.createElement('div');
+      col.className = 'curve-col';
+      col.style.left = (i * colWidthPct) + '%';
+      col.style.width = colWidthPct + '%';
+
+      let result;
+      const wasProbed = probedValues.has(x);
+      if (wasProbed) {
+        result = probedValues.get(x);
+        col.classList.add('probed');
+      } else if (revealed) {
+        try { result = check(x); } catch (e) { result = null; }
+      } else {
+        result = null;
+      }
+
+      if (result === true) col.classList.add('true-region');
+      else if (result === false) col.classList.add('false-region');
+      else col.classList.add('unknown');
+
+      col.title = 'check(' + x + ') = ' + (result === null ? '?' : result);
+      monoCurve.appendChild(col);
+    }
   }
 
   // ============================================================
@@ -1516,9 +1678,10 @@ return x * x >= 50;</textarea>
     mid = -1; ans = -1; steps = 0; finished = false;
     lastCheckResult = null; activeLine = null; history = [];
     trueGoodLo = null; trueGoodHi = null;
+    probedValues = new Map();
     statusEl.innerHTML = 'Ready. Searching answer space [' + initialLo + ', ' + initialHi + '], looking for ' + (direction === 'min' ? 'smallest' : 'largest') + ' good x.';
     clearTrace();
-    renderNumberLine(); updateStats(); renderCode(); updateBackBtn();
+    renderNumberLine(); renderCurve(); updateStats(); renderCode(); updateBackBtn();
   }
 
   function step() {
@@ -1535,7 +1698,7 @@ return x * x >= 50;</textarea>
       } else {
         statusEl.innerHTML = '<span style="color: var(--success); font-weight: 500;">Loop exits: l &gt; r. Answer = ' + ans + '.</span> Took ' + steps + ' step' + (steps === 1 ? '' : 's') + '.';
       }
-      renderNumberLine(); updateStats(); renderCode(); updateBackBtn();
+      renderNumberLine(); renderCurve(); updateStats(); renderCode(); updateBackBtn();
       clearInterval(autoTimer); autoTimer = null;
       return;
     }
@@ -1554,6 +1717,7 @@ return x * x >= 50;</textarea>
       return;
     }
     lastCheckResult = isGood;
+    probedValues.set(mid, isGood);
     appendTrace(getTraceMsg(mid));
 
     // Reveal the good region progressively for didactic effect
@@ -1590,14 +1754,14 @@ return x * x >= 50;</textarea>
       }
     }
 
-    renderNumberLine(); updateStats(); renderCode(); updateBackBtn();
+    renderNumberLine(); renderCurve(); updateStats(); renderCode(); updateBackBtn();
   }
 
   function back() {
     if (history.length === 0) return;
     clearInterval(autoTimer); autoTimer = null;
     restore(history.pop());
-    renderNumberLine(); updateStats(); renderCode(); updateBackBtn();
+    renderNumberLine(); renderCurve(); updateStats(); renderCode(); updateBackBtn();
   }
 
   function startAuto() {
@@ -1639,10 +1803,15 @@ return x * x >= 50;</textarea>
   });
 
   // Re-render number line on resize
-  window.addEventListener('resize', () => renderNumberLine());
+  // Re-render number line and curve on resize
+  window.addEventListener('resize', () => { renderNumberLine(); renderCurve(); });
+  // Reveal-full-curve checkbox
+  if (curveReveal) {
+    curveReveal.addEventListener('change', () => renderCurve());
+  }
   // Also re-render when this page becomes active (clientWidth was 0 while hidden)
   document.addEventListener('page:activated', e => {
-    if (e.detail.page === 'bsta') renderNumberLine();
+    if (e.detail.page === 'bsta') { renderNumberLine(); renderCurve(); }
   });
 
   setProblem('logs');
