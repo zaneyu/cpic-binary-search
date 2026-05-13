@@ -602,7 +602,7 @@
     } else if (count <= 10) {
       msg = `Solved in ${count} guesses. Binary search would have found it in at most 7. Try guessing the midpoint of the current range each time.`;
     } else {
-      msg = `Solved in ${count} guesses. Binary search guarantees 7 or fewer — always guess the middle of the current <code>[lo, hi]</code> range.`;
+      msg = `Solved in ${count} guesses. Binary search guarantees 7 or fewer — always guess the middle of the current <code>[l, r]</code> range.`;
     }
     hint.innerHTML = msg;
     hint.classList.add('show');

@@ -796,7 +796,7 @@
   </div>
 
   <div class="footer-note">
-    <span style="font-weight: 500;">How this works:</span> $l$ and $r$ point to the start and end of the part we still need to check. We loop while $l \le r$ and look at the middle: $m = \lfloor (l + r) / 2 \rfloor$. For <code>lower_bound</code> / <code>upper_bound</code>, when the middle value is "good enough" we save it as our best answer so far ($\text{ans} = m$) and keep searching to the left to see if there's an even earlier one. Each search takes $O(\log n)$ steps.
+    <span style="font-weight: 500;">How this works:</span> $l$ and $r$ point to the start and end of the part we still need to check. We loop while $l \le r$ and look at the middle: $\text{mid} = \lfloor (l + r) / 2 \rfloor$. For <code>lower_bound</code> / <code>upper_bound</code>, when the middle value is "good enough" we save it as our best answer so far ($\text{ans} = \text{mid}$) and keep searching to the left to see if there's an even earlier one. Each search takes $O(\log n)$ steps.
     <br><br>
     <span style="font-weight: 500;">Handy facts:</span> the number of values smaller than $x$ is just <code>lower_bound(x)</code>, and the number of values larger than $x$ is $n - $ <code>upper_bound(x)</code>.
     <br><br>
@@ -809,7 +809,7 @@
 <div class="page" id="page-bsta">
 <div class="container">
   <h1>Binary search the answer</h1>
-  <p class="subtitle">Sometimes the thing you're looking for isn't <em>in</em> a list — it's a number in some range $[\text{lo}, \text{hi}]$. Pick a guess $x$, write a $\text{check}(x)$ function that says "yes that works" or "no that doesn't", and narrow down. This works as long as $\text{check}$ has a clean cutoff: once it flips from no to yes (or yes to no), it never flips back.</p>
+  <p class="subtitle">Sometimes the thing you're looking for isn't <em>in</em> a list — it's a number in some range $[l, r]$. Pick a guess $x$, write a $\text{check}(x)$ function that says "yes that works" or "no that doesn't", and narrow down. This works as long as $\text{check}$ has a clean cutoff: once it flips from no to yes (or yes to no), it never flips back.</p>
 
   <div class="problem-section">
     <div class="problem-toggle" role="tablist">
@@ -876,7 +876,7 @@ return x * x >= 50;</textarea>
   </div>
 
   <div class="footer-note">
-    <span style="font-weight: 500;">How BSTA works:</span> you have a range of possible answers, from $\text{lo}$ to $\text{hi}$. The function $\text{check}(x)$ tells you whether a guess $x$ is good. If there's a clean cutoff — some value $x^\star$ where everything on one side works and everything on the other side doesn't — you can find $x^\star$ in just $O(\log(\text{hi} - \text{lo}))$ tries. When $\text{check}(m)$ is true, save $\text{ans} = m$ and shrink toward the better side; otherwise shrink the other way.
+    <span style="font-weight: 500;">How BSTA works:</span> you have a range of possible answers, from $l$ to $r$. The function $\text{check}(x)$ tells you whether a guess $x$ is good. If there's a clean cutoff — some value $x^\star$ where everything on one side works and everything on the other side doesn't — you can find $x^\star$ in just $O(\log(r - l))$ tries. When $\text{check}(\text{mid})$ is true, save $\text{ans} = \text{mid}$ and shrink toward the better side; otherwise shrink the other way.
     <br><br>
     <span style="font-weight: 500;">Quick tip:</span> if a problem asks for the <em>smallest possible biggest</em> ($\min \max$) or the <em>biggest possible smallest</em> ($\max \min$) of something, it's often a BSTA problem.
     <br><br>
@@ -1449,8 +1449,8 @@ return x * x >= 50;</textarea>
     custom: {
       desc: 'Write your own $\\text{check}(x)$ function below — it should return <code>true</code> when $x$ is "good" and <code>false</code> otherwise. Pick <em>min</em> to hunt for the smallest good $x$, or <em>max</em> for the largest. Important: $\\text{check}$ must have a clean cutoff — once it flips from false to true (or true to false), it can\'t flip back. Your code has access to $x$ and must <code>return</code> a boolean.',
       params: [
-        { id: 'custom-lo', label: 'lo (range start)', value: '1', kind: 'number' },
-        { id: 'custom-hi', label: 'hi (range end)', value: '100', kind: 'number' },
+        { id: 'custom-lo', label: 'l (range start)', value: '1', kind: 'number' },
+        { id: 'custom-hi', label: 'r (range end)', value: '100', kind: 'number' },
         { id: 'custom-dir', label: 'Direction', value: 'min', kind: 'select', options: ['min', 'max'] }
       ],
       lo: (p) => p.lo,
@@ -1467,8 +1467,8 @@ return x * x >= 50;</textarea>
         const hi = Number(document.getElementById('custom-hi').value);
         const dir = document.getElementById('custom-dir').value;
         const fnText = document.getElementById('check-fn-text').value;
-        if (Number.isNaN(lo) || Number.isNaN(hi)) return { error: 'lo and hi must be numbers.' };
-        if (lo > hi) return { error: 'lo must be ≤ hi.' };
+        if (Number.isNaN(lo) || Number.isNaN(hi)) return { error: 'l and r must be numbers.' };
+        if (lo > hi) return { error: 'l must be ≤ r.' };
         let checkFn;
         try {
           checkFn = new Function('x', fnText);
@@ -1583,7 +1583,14 @@ return x * x >= 50;</textarea>
   function renderCode() {
     const p = PROBLEMS[problemKey];
     codeBox.innerHTML = p.codeLines.map((line, i) => {
-      const escaped = line.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      // Substitute LO/HI placeholders with current param values when available
+      let resolved = line;
+      if (parsedParams) {
+        if (problemKey === 'custom') {
+          resolved = resolved.replace(/\bLO\b/g, parsedParams.lo).replace(/\bHI\b/g, parsedParams.hi);
+        }
+      }
+      const escaped = resolved.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
       return activeLine === i ? '<span class="hl">' + escaped + '</span>' : escaped;
     }).join('\n');
   }
