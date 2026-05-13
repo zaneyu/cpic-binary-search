@@ -737,7 +737,7 @@
 <div class="page active" id="page-search">
 <div class="container">
   <h1>Binary search — CPIC template</h1>
-  <p class="subtitle">Three search modes on a sorted array, all running in $O(\log n)$ vs. $O(n)$ for linear scan. Standard CPIC template: invariant $l \le r$ over the unsearched range $[l, r]$. The highlighted line is the one running this step.</p>
+  <p class="subtitle">Three ways to search a sorted list. Each one takes only $O(\log n)$ steps — way faster than checking elements one by one ($O(n)$). We keep two pointers $l$ and $r$ marking the part we haven't checked yet, and loop while $l \le r$. The highlighted line is the one running right now.</p>
 
   <div class="array-input-row">
     <label>Array</label>
@@ -751,12 +751,12 @@
     <div class="mode-toggle" role="tablist">
       <button id="mode-search" class="active" data-mode="search">Search</button>
       <button id="mode-lower" data-mode="lower">Count &lt; x (lower_bound)</button>
-      <button id="mode-upper" data-mode="upper">upper_bound</button>
+      <button id="mode-upper" data-mode="upper">Count &gt; x (upper_bound)</button>
     </div>
     <div class="mode-desc" id="mode-desc"></div>
     <pre class="code-snippet" id="code-box"></pre>
     <div class="stl-block" id="stl-block" style="display:none;">
-      <div class="stl-label">Or just use the C++ STL — same answer, one line:</div>
+      <div class="stl-label">Or skip the loop — C++ already has this built in:</div>
       <pre class="code-snippet stl-snippet" id="stl-box"></pre>
     </div>
   </div>
@@ -785,7 +785,7 @@
   </div>
 
   <div class="status" id="status">
-    Pick a mode and target, then press <span style="font-weight: 500;">Start</span>.
+    Pick a mode and a target number, then press <span style="font-weight: 500;">Start</span> to watch it run.
   </div>
 
   <div class="legend">
@@ -796,9 +796,11 @@
   </div>
 
   <div class="footer-note">
-    CPIC template: $l, r$ are inclusive bounds on the unsearched range, loop runs while $l \le r$, midpoint $m = \lfloor (l + r) / 2 \rfloor$. For <code>lower_bound</code> / <code>upper_bound</code>, when $\text{mid}$ is "good" we record $\text{ans} = m$ and keep searching left for an even earlier valid index. Counting identities: $\#\{i : a_i < x\} = \text{lower\_bound}(x)$ and $\#\{i : a_i > x\} = n - \text{upper\_bound}(x)$. Overall cost per query: $O(\log n)$.
+    <span style="font-weight: 500;">How this works:</span> $l$ and $r$ point to the start and end of the part we still need to check. We loop while $l \le r$ and look at the middle: $m = \lfloor (l + r) / 2 \rfloor$. For <code>lower_bound</code> / <code>upper_bound</code>, when the middle value is "good enough" we save it as our best answer so far ($\text{ans} = m$) and keep searching to the left to see if there's an even earlier one. Each search takes $O(\log n)$ steps.
     <br><br>
-    <span style="font-weight: 500;">Keyboard shortcuts:</span> <code>→</code> or <code>Space</code> step forward · <code>←</code> step backward · <code>R</code> reset · <code>Enter</code> in array input to reload.
+    <span style="font-weight: 500;">Handy facts:</span> the number of values smaller than $x$ is just <code>lower_bound(x)</code>, and the number of values larger than $x$ is $n - $ <code>upper_bound(x)</code>.
+    <br><br>
+    <span style="font-weight: 500;">Keyboard shortcuts:</span> <code>→</code> or <code>Space</code> step forward · <code>←</code> step back · <code>R</code> reset · <code>Enter</code> in the array box to reload.
   </div>
 </div>
 
@@ -807,7 +809,7 @@
 <div class="page" id="page-bsta">
 <div class="container">
   <h1>Binary search the answer</h1>
-  <p class="subtitle">When you can't binary search on an array, search the <em>answer space</em> $[\text{lo}, \text{hi}]$. Pick a candidate $x$, run $\text{check}(x)$, narrow. Works whenever $\text{check}$ is <em>monotonic</em>: once it flips, it stays flipped.</p>
+  <p class="subtitle">Sometimes the thing you're looking for isn't <em>in</em> a list — it's a number in some range $[\text{lo}, \text{hi}]$. Pick a guess $x$, write a $\text{check}(x)$ function that says "yes that works" or "no that doesn't", and narrow down. This works as long as $\text{check}$ has a clean cutoff: once it flips from no to yes (or yes to no), it never flips back.</p>
 
   <div class="problem-section">
     <div class="problem-toggle" role="tablist">
@@ -861,7 +863,7 @@ return x * x >= 50;</textarea>
   </div>
 
   <div class="status" id="bsta-status">
-    Pick a problem, set parameters, then press <span style="font-weight: 500;">Start</span>.
+    Pick a problem, set the numbers, then press <span style="font-weight: 500;">Start</span> to watch it run.
   </div>
 
   <div class="check-trace" id="check-trace"><span class="check-trace-empty">check() trace will appear here as the search runs.</span></div>
@@ -874,9 +876,9 @@ return x * x >= 50;</textarea>
   </div>
 
   <div class="footer-note">
-    <span style="font-weight: 500;">The BSTA template:</span> the answer space is a range $[\text{lo}, \text{hi}]$. The predicate $\text{check}(x) \in \{\text{true}, \text{false}\}$ tests feasibility of $x$. If $\text{check}$ is <em>monotonic</em> — formally, $\exists\, x^\star$ s.t. $\text{check}(x) = \text{true} \iff x \ge x^\star$ (or $\le$, for "max" direction) — one binary search of $O(\log(\text{hi} - \text{lo}))$ probes locates the boundary $x^\star$. When $\text{check}(m)$ is true, record $\text{ans} = m$ and shrink toward the better extreme; otherwise shrink the other way.
+    <span style="font-weight: 500;">How BSTA works:</span> you have a range of possible answers, from $\text{lo}$ to $\text{hi}$. The function $\text{check}(x)$ tells you whether a guess $x$ is good. If there's a clean cutoff — some value $x^\star$ where everything on one side works and everything on the other side doesn't — you can find $x^\star$ in just $O(\log(\text{hi} - \text{lo}))$ tries. When $\text{check}(m)$ is true, save $\text{ans} = m$ and shrink toward the better side; otherwise shrink the other way.
     <br><br>
-    <span style="font-weight: 500;">Heuristic:</span> if a problem asks for $\min \max$ or $\max \min$, suspect BSTA.
+    <span style="font-weight: 500;">Quick tip:</span> if a problem asks for the <em>smallest possible biggest</em> ($\min \max$) or the <em>biggest possible smallest</em> ($\max \min$) of something, it's often a BSTA problem.
     <br><br>
     <span style="font-weight: 500;">Keyboard:</span> <code>→</code> or <code>Space</code> step · <code>←</code> back · <code>R</code> reset.
   </div>
@@ -951,9 +953,9 @@ return x * x >= 50;</textarea>
   }
 
   const MODE_DESCS = {
-    search: 'Find any index $i$ such that $\\text{arr}[i] = \\text{target}$. Returns $i$, or $-1$ if not found.',
-    lower: '<span style="font-weight:500;">How many elements are $< x$?</span> The trick: that count equals the index of the first element $\\geq x$ — which is exactly what <code>lower_bound</code> finds. So one binary search of $O(\\log n)$ answers the counting question.<br><br><span style="font-weight:500;">STL one-liner:</span> <code>int cnt = lower_bound(v.begin(), v.end(), x) - v.begin();</code> &nbsp;·&nbsp; value: <code>int val = *lower_bound(v.begin(), v.end(), x);</code>',
-    upper: '<code>upper_bound</code>: find the smallest index $i$ where $\\text{arr}[i] > x$. The count of elements $> x$ is $n - \\text{upper\\_bound}(x)$.<br><br><span style="font-weight:500;">STL one-liner:</span> <code>int cnt = n - (upper_bound(v.begin(), v.end(), x) - v.begin());</code> &nbsp;·&nbsp; value: <code>int val = *upper_bound(v.begin(), v.end(), x);</code>'
+    search: 'Find where the target lives in the list. Returns its position $i$ (so $\\text{arr}[i] = \\text{target}$), or $-1$ if it isn\'t there.',
+    lower: '<span style="font-weight:500;">How many numbers in the list are less than $x$?</span> Here\'s the trick: that count is the same as the position of the first number that\'s $\\geq x$ — which is exactly what <code>lower_bound</code> gives you. One binary search ($O(\\log n)$) answers the question.<br><br><span style="font-weight:500;">C++ shortcut:</span> <code>int cnt = lower_bound(v.begin(), v.end(), x) - v.begin();</code> &nbsp;·&nbsp; to grab the value itself: <code>int val = *lower_bound(v.begin(), v.end(), x);</code>',
+    upper: '<span style="font-weight:500;">How many numbers in the list are greater than $x$?</span> Use <code>upper_bound</code> to find the position of the first number $> x$, then $\\text{count} = n - \\text{upper\\_bound}(x)$.<br><br><span style="font-weight:500;">C++ shortcut:</span> <code>int cnt = n - (upper_bound(v.begin(), v.end(), x) - v.begin());</code> &nbsp;·&nbsp; value: <code>int val = *upper_bound(v.begin(), v.end(), x);</code>'
   };
 
   // Code templates exactly matching the CPIC lecture slides
@@ -1165,7 +1167,8 @@ return x * x >= 50;</textarea>
     activeLine = null;
     history = [];
     const modeName = mode === 'search' ? 'equality search' : mode === 'lower' ? 'lower_bound' : 'upper_bound';
-    statusEl.innerHTML = 'Ready for <span style="font-weight: 500;">' + modeName + '</span>. Initial state: $l = 0$, $r = ' + (arr.length - 1) + '$, $\\text{ans} = -1$.';
+    const modeFriendly = mode === 'search' ? 'finding the target' : mode === 'lower' ? 'counting elements &lt; x' : 'counting elements &gt; x';
+    statusEl.innerHTML = 'Starting <span style="font-weight: 500;">' + modeFriendly + '</span>. We begin with $l = 0$, $r = ' + (arr.length - 1) + '$, $\\text{ans} = -1$.';
     renderArray(); updateStats(); renderCode(); updateBackButton(); renderStatusMath();
   }
 
@@ -1182,7 +1185,7 @@ return x * x >= 50;</textarea>
     if (l > r) {
       finished = true; foundIdx = -1;
       activeLine = 7; // return -1;
-      statusEl.innerHTML = '<span style="color: var(--danger); font-weight: 500;">Loop exits: $l \\gt r$.</span> $' + target + '$ is not in the array. Return $-1$. Took ' + steps + ' step' + (steps === 1 ? '' : 's') + '.';
+      statusEl.innerHTML = '<span style="color: var(--danger); font-weight: 500;">Done — $l$ passed $r$.</span> $' + target + '$ isn\'t in the list. Return $-1$. Took ' + steps + ' step' + (steps === 1 ? '' : 's') + '.';
       mid = -1;
       return true;
     }
@@ -1195,18 +1198,18 @@ return x * x >= 50;</textarea>
     if (midVal === target) {
       activeLine = 3; // if (arr[mid] == target) return mid;
       finished = true; foundIdx = mid;
-      statusEl.innerHTML = '<span style="color: var(--success); font-weight: 500;">$\\text{arr}[' + mid + '] = ' + target + '$. Return $' + mid + '$.</span> Took ' + steps + ' step' + (steps === 1 ? '' : 's') + '.';
+      statusEl.innerHTML = '<span style="color: var(--success); font-weight: 500;">Found it! $\\text{arr}[' + mid + '] = ' + target + '$. Return $' + mid + '$.</span> Took ' + steps + ' step' + (steps === 1 ? '' : 's') + '.';
       return true;
     }
 
     if (midVal < target) {
       activeLine = 4; // else if (arr[mid] < target) l = mid + 1;
-      statusEl.innerHTML = 'Step $' + steps + '$: $\\text{arr}[' + mid + '] = ' + midVal + '$ <span style="font-weight:500;">$\\lt ' + target + '$</span>. $l = \\text{mid} + 1 = ' + (mid + 1) + '$.';
+      statusEl.innerHTML = 'Step $' + steps + '$: $\\text{arr}[' + mid + '] = ' + midVal + '$ is <span style="font-weight:500;">smaller than $' + target + '$</span>, so the target must be to the right. Move $l$ past the middle: $l = ' + (mid + 1) + '$.';
       for (let i = l; i <= mid; i++) excluded.add(i);
       l = mid + 1;
     } else {
       activeLine = 5; // else r = mid - 1;
-      statusEl.innerHTML = 'Step $' + steps + '$: $\\text{arr}[' + mid + '] = ' + midVal + '$ <span style="font-weight:500;">$\\gt ' + target + '$</span>. $r = \\text{mid} - 1 = ' + (mid - 1) + '$.';
+      statusEl.innerHTML = 'Step $' + steps + '$: $\\text{arr}[' + mid + '] = ' + midVal + '$ is <span style="font-weight:500;">bigger than $' + target + '$</span>, so the target must be to the left. Move $r$ before the middle: $r = ' + (mid - 1) + '$.';
       for (let i = mid; i <= r; i++) excluded.add(i);
       r = mid - 1;
     }
@@ -1226,10 +1229,11 @@ return x * x >= 50;</textarea>
       const boundName = mode === 'lower' ? 'lower_bound' : 'upper_bound';
       const cmp = mode === 'lower' ? '&gt;=' : '&gt;';
       const latexCmp = mode === 'lower' ? '\\geq' : '\\gt';
+      const cmpWord = mode === 'lower' ? 'at least' : 'greater than';
       if (ans === -1) {
-        statusEl.innerHTML = '<span style="color: var(--warning); font-weight: 500;">Loop exits: $l \\gt r$.</span> $\\text{' + boundName + '} = -1$ (no element satisfies $\\text{arr}[i] ' + latexCmp + ' ' + target + '$; the $n$-element answer would be $' + arr.length + '$).';
+        statusEl.innerHTML = '<span style="color: var(--warning); font-weight: 500;">Done — $l$ passed $r$.</span> No element is ' + cmpWord + ' $' + target + '$, so $\\text{' + boundName + '} = -1$ (or equivalently, the answer would be $n = ' + arr.length + '$ — meaning every element is on the other side).';
       } else {
-        statusEl.innerHTML = '<span style="color: var(--success); font-weight: 500;">Loop exits: $l \\gt r$.</span> $\\text{' + boundName + '} = ' + ans + '$. $\\text{arr}[' + ans + '] = ' + arr[ans] + '$ is the first element $' + latexCmp + ' ' + target + '$. Took ' + steps + ' step' + (steps === 1 ? '' : 's') + '.';
+        statusEl.innerHTML = '<span style="color: var(--success); font-weight: 500;">Done — $l$ passed $r$.</span> $\\text{' + boundName + '} = ' + ans + '$. $\\text{arr}[' + ans + '] = ' + arr[ans] + '$ is the first element ' + cmpWord + ' $' + target + '$. Took ' + steps + ' step' + (steps === 1 ? '' : 's') + '.';
       }
       return true;
     }
@@ -1247,13 +1251,13 @@ return x * x >= 50;</textarea>
 
     if (isGood) {
       activeLine = 4; // ans = mid;
-      statusEl.innerHTML = 'Step $' + steps + '$: $\\text{arr}[' + mid + '] = ' + midVal + '$ <span style="font-weight:500;">$' + goodCmp + ' ' + target + '$</span> — in good region. Record $\\text{ans} = ' + mid + '$, then $r = \\text{mid} - 1 = ' + (mid - 1) + '$ to look earlier.';
+      statusEl.innerHTML = 'Step $' + steps + '$: $\\text{arr}[' + mid + '] = ' + midVal + '$ <span style="font-weight:500;">satisfies $' + goodCmp + ' ' + target + '$</span> — this index works! Save it as $\\text{ans} = ' + mid + '$, then look left ($r = ' + (mid - 1) + '$) for an even earlier match.';
       for (let i = mid; i <= r; i++) excluded.add(i);
       ans = mid;
       r = mid - 1;
     } else {
       activeLine = 7; // l = mid + 1;
-      statusEl.innerHTML = 'Step $' + steps + '$: $\\text{arr}[' + mid + '] = ' + midVal + '$ <span style="font-weight:500;">$' + badCmp + ' ' + target + '$</span> — not in good region. $l = \\text{mid} + 1 = ' + (mid + 1) + '$.';
+      statusEl.innerHTML = 'Step $' + steps + '$: $\\text{arr}[' + mid + '] = ' + midVal + '$ <span style="font-weight:500;">is $' + badCmp + ' ' + target + '$</span> — doesn\'t work, need to look right. Move $l = ' + (mid + 1) + '$.';
       for (let i = l; i <= mid; i++) excluded.add(i);
       l = mid + 1;
     }
@@ -1345,7 +1349,7 @@ return x * x >= 50;</textarea>
 
   const PROBLEMS = {
     logs: {
-      desc: 'You have $N$ logs with lengths $a_i$ and may perform $K$ cuts. Each cut splits one log into two pieces. Find the <span style="font-weight:500;">minimum possible value of the maximum log length</span> after $K$ cuts. To make every piece $\\le x$, a log of length $L$ needs $\\lceil L/x \\rceil - 1$ cuts. <em>Monotonic: larger $x$ means fewer cuts, so the set of feasible $x$ is a suffix.</em>',
+      desc: 'You have $N$ logs of lengths $a_i$. You\'re allowed $K$ cuts total (each cut chops one log into two pieces). What\'s the <span style="font-weight:500;">smallest possible length of the longest remaining piece</span>? <br><br>To make every piece at most $x$ long, a single log of length $L$ needs $\\lceil L/x \\rceil - 1$ cuts. <em>Notice: the bigger you allow $x$ to be, the fewer cuts you need — so once a value of $x$ works, every bigger value works too.</em>',
       params: [
         { id: 'logs-arr', label: 'Log lengths', value: '7, 9, 11', kind: 'text' },
         { id: 'logs-k', label: 'K (cuts)', value: '4', kind: 'number' }
@@ -1392,7 +1396,7 @@ return x * x >= 50;</textarea>
     },
 
     ducks: {
-      desc: '$N$ ducks start at position $0$; houses are at positions $1, \\ldots, N$. Each hour you may teleport one duck anywhere and move one duck forward by at most $K$. After $D$ hours every house must have one duck. Find the <span style="font-weight:500;">minimum $K$</span>. Greedy: teleport the $D$ furthest, walk the rest; the $i$-th walking duck needs $\\lceil i / K \\rceil$ hours. <em>Monotonic: larger $K$ → more slack → feasible $K$ form a suffix.</em>',
+      desc: 'There are $N$ ducks at position $0$ and $N$ houses at positions $1, 2, \\ldots, N$. Each hour you can: <strong>(a)</strong> teleport one duck to any house, AND <strong>(b)</strong> move one duck forward by up to $K$ steps. After $D$ hours every house needs a duck in it. What\'s the <span style="font-weight:500;">smallest $K$</span> that makes this possible? <br><br><strong>Plan:</strong> teleport the $D$ ducks to the $D$ furthest houses (no walking needed); the other $N - D$ ducks walk to the closest houses. A duck reaching house $i$ takes $\\lceil i / K \\rceil$ hours. <em>Notice: bigger $K$ means ducks move faster, so once a $K$ works, every larger $K$ works too.</em>',
       params: [
         { id: 'ducks-n', label: 'N (ducks/houses)', value: '6', kind: 'number' },
         { id: 'ducks-d', label: 'D (hours)', value: '3', kind: 'number' }
@@ -1443,7 +1447,7 @@ return x * x >= 50;</textarea>
     },
 
     custom: {
-      desc: 'Define your own predicate $\\text{check}(x) \\to \\{\\text{true}, \\text{false}\\}$ below. Direction <em>min</em> finds the smallest good $x$; <em>max</em> finds the largest. Must be monotonic — once $\\text{check}$ flips, it must stay flipped. The body has access to a single variable $x$ and must <code>return</code> a boolean.',
+      desc: 'Write your own $\\text{check}(x)$ function below — it should return <code>true</code> when $x$ is "good" and <code>false</code> otherwise. Pick <em>min</em> to hunt for the smallest good $x$, or <em>max</em> for the largest. Important: $\\text{check}$ must have a clean cutoff — once it flips from false to true (or true to false), it can\'t flip back. Your code has access to $x$ and must <code>return</code> a boolean.',
       params: [
         { id: 'custom-lo', label: 'lo (range start)', value: '1', kind: 'number' },
         { id: 'custom-hi', label: 'hi (range end)', value: '100', kind: 'number' },
@@ -1780,7 +1784,7 @@ return x * x >= 50;</textarea>
   }
 
   function clearTrace() {
-    checkTrace.innerHTML = '<span class="check-trace-empty">check() trace will appear here as the search runs.</span>';
+    checkTrace.innerHTML = '<span class="check-trace-empty">Each step\'s check() calculation will show up here.</span>';
   }
 
   // ============================================================
@@ -1838,7 +1842,7 @@ return x * x >= 50;</textarea>
     lastCheckResult = null; activeLine = null; history = [];
     trueGoodLo = null; trueGoodHi = null;
     probedValues = new Map();
-    statusEl.innerHTML = 'Ready. Searching answer space $[' + initialLo + ', ' + initialHi + ']$, looking for the ' + (direction === 'min' ? 'smallest' : 'largest') + ' good $x$.';
+    statusEl.innerHTML = 'Ready! We\'ll search $x$ values from $' + initialLo + '$ to $' + initialHi + '$, looking for the <strong>' + (direction === 'min' ? 'smallest' : 'largest') + '</strong> $x$ that makes $\\text{check}(x)$ true.';
     clearTrace();
     renderNumberLine(); renderCurve(); updateStats(); renderCode(); updateBackBtn(); renderStatusMath();
   }
@@ -1853,9 +1857,9 @@ return x * x >= 50;</textarea>
       activeLine = null;
       mid = -1;
       if (ans === -1) {
-        statusEl.innerHTML = '<span style="color: var(--warning); font-weight: 500;">Loop exits: $l \\gt r$.</span> No feasible answer found. ' + steps + ' step' + (steps === 1 ? '' : 's') + '.';
+        statusEl.innerHTML = '<span style="color: var(--warning); font-weight: 500;">Done — $l$ passed $r$.</span> No value of $x$ made $\\text{check}$ true. ' + steps + ' step' + (steps === 1 ? '' : 's') + '.';
       } else {
-        statusEl.innerHTML = '<span style="color: var(--success); font-weight: 500;">Loop exits: $l \\gt r$. Answer $= ' + ans + '$.</span> Took ' + steps + ' step' + (steps === 1 ? '' : 's') + '.';
+        statusEl.innerHTML = '<span style="color: var(--success); font-weight: 500;">Done — $l$ passed $r$.</span> The answer is $' + ans + '$. Took ' + steps + ' step' + (steps === 1 ? '' : 's') + '.';
       }
       renderNumberLine(); renderCurve(); updateStats(); renderCode(); updateBackBtn(); renderStatusMath();
       clearInterval(autoTimer); autoTimer = null;
@@ -1896,19 +1900,19 @@ return x * x >= 50;</textarea>
       activeLine = 4; // ans = mid;
       ans = mid;
       if (direction === 'min') {
-        statusEl.innerHTML = 'Step $' + steps + '$: $\\text{check}(' + mid + ') =$ <span style="color: var(--success); font-weight: 500;">$\\text{true}$</span>. Record $\\text{ans} = ' + mid + '$, shrink right: $r = \\text{mid} - 1 = ' + (mid - 1) + '$.';
+        statusEl.innerHTML = 'Step $' + steps + '$: $\\text{check}(' + mid + ') =$ <span style="color: var(--success); font-weight: 500;">$\\text{true}$</span> — $' + mid + '$ works! Save it as $\\text{ans} = ' + mid + '$, then look left ($r = ' + (mid - 1) + '$) to see if something smaller also works.';
         r = mid - 1;
       } else {
-        statusEl.innerHTML = 'Step $' + steps + '$: $\\text{check}(' + mid + ') =$ <span style="color: var(--success); font-weight: 500;">$\\text{true}$</span>. Record $\\text{ans} = ' + mid + '$, shrink left: $l = \\text{mid} + 1 = ' + (mid + 1) + '$.';
+        statusEl.innerHTML = 'Step $' + steps + '$: $\\text{check}(' + mid + ') =$ <span style="color: var(--success); font-weight: 500;">$\\text{true}$</span> — $' + mid + '$ works! Save it as $\\text{ans} = ' + mid + '$, then look right ($l = ' + (mid + 1) + '$) to see if something bigger also works.';
         l = mid + 1;
       }
     } else {
       activeLine = 7; // l = mid + 1 or r = mid - 1
       if (direction === 'min') {
-        statusEl.innerHTML = 'Step $' + steps + '$: $\\text{check}(' + mid + ') =$ <span style="color: var(--danger); font-weight: 500;">$\\text{false}$</span>. Need larger $x$: $l = \\text{mid} + 1 = ' + (mid + 1) + '$.';
+        statusEl.innerHTML = 'Step $' + steps + '$: $\\text{check}(' + mid + ') =$ <span style="color: var(--danger); font-weight: 500;">$\\text{false}$</span> — $' + mid + '$ is too small. Try bigger: $l = ' + (mid + 1) + '$.';
         l = mid + 1;
       } else {
-        statusEl.innerHTML = 'Step $' + steps + '$: $\\text{check}(' + mid + ') =$ <span style="color: var(--danger); font-weight: 500;">$\\text{false}$</span>. Need smaller $x$: $r = \\text{mid} - 1 = ' + (mid - 1) + '$.';
+        statusEl.innerHTML = 'Step $' + steps + '$: $\\text{check}(' + mid + ') =$ <span style="color: var(--danger); font-weight: 500;">$\\text{false}$</span> — $' + mid + '$ is too big. Try smaller: $r = ' + (mid - 1) + '$.';
         r = mid - 1;
       }
     }
