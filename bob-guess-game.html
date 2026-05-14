@@ -474,8 +474,10 @@
   let guessCount = 0;
   let gameOver = false;
 
+  let firstGame = true;
   function newGame() {
-    target = 67;
+    target = firstGame ? 67 : Math.floor(Math.random() * 101);
+    firstGame = false;
     lo = 0; hi = 100;
     guessCount = 0;
     gameOver = false;
