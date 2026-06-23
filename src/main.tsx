@@ -3,21 +3,18 @@ import { createRoot } from 'react-dom/client'
 import { HashRouter, Routes, Route } from 'react-router-dom'
 import './index.css'
 import 'katex/dist/katex.min.css'
-
-function Placeholder() {
-  return (
-    <div className="p-8">
-      <h1 className="text-2xl font-semibold text-heading">CPIC — scaffold OK</h1>
-      <p className="mt-2 text-sm text-text-muted">Design tokens wired. Building the surfaces next.</p>
-    </div>
-  )
-}
+import { RootLayout } from './components/layout/RootLayout'
+import { SearchPage } from './pages/SearchPage'
+import { BobPage } from './pages/BobPage'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <HashRouter>
       <Routes>
-        <Route path="/" element={<Placeholder />} />
+        <Route element={<RootLayout />}>
+          <Route path="/" element={<SearchPage />} />
+          <Route path="/bob" element={<BobPage />} />
+        </Route>
       </Routes>
     </HashRouter>
   </StrictMode>,
