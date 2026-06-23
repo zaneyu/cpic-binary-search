@@ -1,0 +1,120 @@
+@import "tailwindcss";
+
+/* OS-preference theming (no .dark class, no toggle) to match the legacy site. */
+@custom-variant dark (@media (prefers-color-scheme: dark));
+
+/* ---- Brand tokens (hex/sRGB, ported verbatim from legacy/index.html) ---- */
+:root {
+  --bg: #0e1525;
+  --surface: #161e30;
+  --surface-muted: #1d2640;
+  --surface-elevated: #222c48;
+  --text: #e8ecf5;
+  --text-muted: #a0a8bd;
+  --text-hint: #6b7390;
+  --border: rgba(140, 200, 230, 0.12);
+  --border-strong: rgba(140, 200, 230, 0.28);
+  --accent: #5fb8d4;
+  --accent-dim: #3a8aa8;
+  --accent-2: #b889e8;
+  --accent-3: #f08aa8;
+  --success: #6dc395;
+  --danger: #d96a6a;
+  --warning: #d4a05f;
+  --highlight: #f0c674;
+  --heading: #cbb0f0;
+  --grad-accent: linear-gradient(135deg, #5fb8d4 0%, #b889e8 100%);
+  --grad-heading: linear-gradient(95deg, #5fb8d4 0%, #b889e8 60%, #f08aa8 100%);
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #f4f6fa;
+    --surface: #ffffff;
+    --surface-muted: #eaeef5;
+    --surface-elevated: #ffffff;
+    --text: #1a2238;
+    --text-muted: #5a6480;
+    --text-hint: #8990a8;
+    --border: rgba(26, 34, 56, 0.1);
+    --border-strong: rgba(26, 34, 56, 0.22);
+    --accent: #3a8aa8;
+    --accent-dim: #5fb8d4;
+    --accent-2: #8a5fc4;
+    --accent-3: #c45f7d;
+    --success: #2e8b5f;
+    --danger: #b04545;
+    --warning: #a67533;
+    --highlight: #b88a3a;
+    --heading: #6f48a8;
+    --grad-accent: linear-gradient(135deg, #3a8aa8 0%, #8a5fc4 100%);
+    --grad-heading: linear-gradient(95deg, #3a8aa8 0%, #8a5fc4 60%, #c45f7d 100%);
+  }
+}
+
+/* Expose tokens to Tailwind utilities (inline => utilities reference the live
+   CSS var, so bg-surface / text-text-muted / border-line track the OS theme). */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+  --color-text-hint: var(--text-hint);
+  --color-line: var(--border);
+  --color-line-strong: var(--border-strong);
+  --color-accent: var(--accent);
+  --color-accent-dim: var(--accent-dim);
+  --color-accent-2: var(--accent-2);
+  --color-accent-3: var(--accent-3);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+  --color-warning: var(--warning);
+  --color-highlight: var(--highlight);
+  --color-heading: var(--heading);
+  --font-mono: "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+* { box-sizing: border-box; }
+
+html, body, #root { min-height: 100%; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+@keyframes aurora-drift-a {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(6%, 4%, 0) scale(1.12); }
+}
+@keyframes aurora-drift-b {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1.05); }
+  50% { transform: translate3d(-7%, -5%, 0) scale(1); }
+}
+@keyframes aurora-drift-c {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(4%, -6%, 0) scale(1.1); }
+}
+@keyframes sheen {
+  from { background-position: -200% 0; }
+  to { background-position: 200% 0; }
+}
+
+/* Reduced motion: freeze all of it (matches the legacy blanket reset). */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.katex { font-size: 1em; }
+.katex-display { margin: 0.4em 0; }
