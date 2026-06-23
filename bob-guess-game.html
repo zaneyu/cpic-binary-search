@@ -17,8 +17,34 @@
     --success: #6dc395;
     --danger: #d96a6a;
     --highlight: #f0c674;
-    --grad-heading: linear-gradient(95deg, #5fb8d4 0%, #b889e8 60%, #f08aa8 100%);
+    --heading: #cbb0f0;
     --grad-accent: linear-gradient(135deg, #5fb8d4 0%, #b889e8 100%);
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #f4f6fa;
+      --surface: #ffffff;
+      --surface-muted: #eaeef5;
+      --text: #1a2238;
+      --text-muted: #5a6480;
+      --text-hint: #8990a8;
+      --accent: #3a8aa8;
+      --accent-2: #8a5fc4;
+      --accent-3: #c45f7d;
+      --success: #2e8b5f;
+      --danger: #b04545;
+      --highlight: #b88a3a;
+      --heading: #6f48a8;
+      --grad-accent: linear-gradient(135deg, #3a8aa8 0%, #8a5fc4 100%);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
   html, body {
     margin: 0; padding: 0;
@@ -37,7 +63,18 @@
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
     padding: 2rem 1rem;
-    min-height: calc(100vh - 4rem);
+    min-height: calc(100dvh - 4rem);
+  }
+  @media (prefers-color-scheme: light) {
+    body {
+      background:
+        radial-gradient(ellipse 55% 45% at 10% 0%, rgba(58, 138, 168, 0.14), transparent 60%),
+        radial-gradient(ellipse 70% 60% at 92% 5%, rgba(138, 95, 196, 0.18), transparent 65%),
+        radial-gradient(ellipse 70% 55% at 50% 110%, rgba(196, 95, 125, 0.16), transparent 60%),
+        radial-gradient(ellipse 50% 45% at 25% 55%, rgba(184, 138, 58, 0.08), transparent 70%),
+        var(--bg);
+      background-attachment: fixed;
+    }
   }
 
   .header {
@@ -48,10 +85,7 @@
     margin: 0 0 0.5rem;
     font-size: 26px; font-weight: 600;
     letter-spacing: -0.015em;
-    background: var(--grad-heading);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    color: var(--heading);
     display: inline-block;
   }
   .header p {
@@ -345,10 +379,10 @@
   /* Final hint card */
   .hint {
     margin-top: 1.5rem;
-    padding: 12px 16px 12px 18px;
+    padding: 13px 16px;
     background: var(--surface-muted);
-    border: 1px solid rgba(184, 137, 232, 0.20);
-    border-radius: 6px;
+    border: 1px solid rgba(184, 137, 232, 0.28);
+    border-radius: 8px;
     font-size: 13px;
     color: var(--text-muted);
     line-height: 1.55;
@@ -356,14 +390,6 @@
     opacity: 0;
     transform: translateY(8px);
     transition: opacity 0.5s ease, transform 0.5s ease;
-    position: relative;
-    overflow: hidden;
-  }
-  .hint::before {
-    content: '';
-    position: absolute; left: 0; top: 0; bottom: 0;
-    width: 3px;
-    background: var(--grad-heading);
   }
   .hint.show { opacity: 1; transform: translateY(0); }
   .hint code {
@@ -378,14 +404,29 @@
     text-decoration: none;
     font-size: 16px;
     font-weight: 500;
-    background: var(--grad-heading);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    transition: filter 0.15s;
+    color: var(--accent);
+    transition: color 0.15s;
   }
-  .back-link:hover { filter: brightness(1.15); }
+  .back-link:hover { color: var(--heading); }
   .katex { font-size: 1.0em; }
+
+  /* Narrow screens: push the two characters to the edges so their
+     inward-pointing speech bubbles stop colliding in the middle. */
+  @media (max-width: 560px) {
+    .stage { padding: 1.5rem 1rem; }
+    .header h1 { font-size: 22px; }
+    .characters {
+      justify-content: space-between;
+      padding: 0 2px;
+      min-height: 140px;
+    }
+    .character { width: 104px; }
+    .character .face { font-size: 56px; }
+    .bubble { font-size: 13px; padding: 7px 11px; }
+    .bubble.you { right: -6px; }
+    .bubble.bob { left: -6px; }
+    .controls { gap: 8px; }
+  }
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
 <script>
