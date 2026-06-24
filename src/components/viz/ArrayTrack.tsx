@@ -83,7 +83,7 @@ export function ArrayTrack({ arr, mode, l, r, mid, ans, finished, foundIdx, excl
             </div>
             <span className="mt-1 text-[10px] text-text-hint">{i}</span>
             {isAnsSoFar && !isMid && !isFinal && (
-              <span className="absolute -top-4 text-[10px] text-accent">ans</span>
+              <span className="absolute -top-4 text-[10px] text-primary">ans</span>
             )}
             {isMid && <span className="absolute -bottom-3.5 text-[11px] leading-none text-highlight">▲</span>}
           </div>

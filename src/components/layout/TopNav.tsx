@@ -17,15 +17,15 @@ function NavTab({ to, label, hint, icon, divide }: (typeof ITEMS)[number] & { di
         cn(
           'group relative flex items-center gap-2.5 px-4 py-2.5 transition-colors',
           'pointer-coarse:min-h-12',
-          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent/60',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/60',
           divide && 'border-t border-line-strong sm:border-l sm:border-t-0',
-          isActive ? 'bg-accent/12 text-accent' : 'text-text-muted hover:bg-surface hover:text-text',
+          isActive ? 'bg-primary/12 text-primary' : 'text-text-muted hover:bg-surface hover:text-text',
         )
       }
     >
       {({ isActive }) => (
         <>
-          <span aria-hidden className={cn('shrink-0', isActive ? 'text-accent' : 'text-text-hint group-hover:text-text-muted')}>
+          <span aria-hidden className={cn('shrink-0', isActive ? 'text-primary' : 'text-text-hint group-hover:text-text-muted')}>
             {icon}
           </span>
           <span className="flex min-w-0 flex-col leading-tight">

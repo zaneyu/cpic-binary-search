@@ -10,7 +10,7 @@ export interface Chip {
 
 const toneValue: Record<ChipTone, string> = {
   default: 'text-text',
-  idx: 'text-accent',
+  idx: 'text-primary',
   mid: 'text-highlight',
   count: 'text-success',
   ans: 'text-accent-2',
@@ -19,7 +19,7 @@ const toneValue: Record<ChipTone, string> = {
 }
 const toneLabel: Record<ChipTone, string> = {
   default: 'text-text-hint',
-  idx: 'text-accent/70',
+  idx: 'text-primary/70',
   mid: 'text-highlight/70',
   count: 'text-success/70',
   ans: 'text-accent-2/70',

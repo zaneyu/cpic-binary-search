@@ -12,7 +12,7 @@ import {
   parseArray,
   randomArray,
 } from '../data/searchContent'
-import { Button, Segmented, SpeedSlider, TextInput } from '../components/ui/controls'
+import { Button, Segmented, SpeedSlider, TextInput, TipButton } from '../components/ui/controls'
 import { IconNext, IconPlay, IconPrev, IconReset } from '../components/ui/icons'
 import { highlight } from '../lib/highlight'
 import { ArrayTrack } from '../components/viz/ArrayTrack'
@@ -109,7 +109,7 @@ export function BinarySearchView({ active }: { active: boolean }) {
   return (
     <div className="space-y-4">
       <header className="space-y-1">
-        <h1 className="font-mono text-xl font-semibold tracking-tight text-accent">
+        <h1 className="font-mono text-xl font-semibold tracking-tight text-primary">
           binary search
         </h1>
         <RichText
@@ -150,14 +150,13 @@ export function BinarySearchView({ active }: { active: boolean }) {
           Search mode and code
         </h2>
         <Segmented<Mode>
-          groupId="search-mode"
           ariaLabel="Search mode"
           value={mode}
           onChange={setMode}
           options={(['search', 'lower', 'upper'] as Mode[]).map((m) => ({ value: m, label: MODE_LABELS[m] }))}
         />
         <RichText
-          className="prose-sans mt-2.5 max-w-[68ch] text-sm leading-relaxed text-text-muted [&_code]:rounded-[2px] [&_code]:bg-surface-muted [&_code]:px-1.5 [&_code]:font-mono [&_code]:text-xs [&_code]:text-accent"
+          className="prose-sans mt-2.5 max-w-[68ch] text-sm leading-relaxed text-text-muted [&_code]:rounded-[2px] [&_code]:bg-surface-muted [&_code]:px-1.5 [&_code]:font-mono [&_code]:text-xs [&_code]:text-primary"
           html={MODE_DESCS[mode]}
         />
         <div className="mt-3">
@@ -186,18 +185,18 @@ export function BinarySearchView({ active }: { active: boolean }) {
           value={targetStr}
           onChange={(e) => setTargetStr(e.target.value)}
         />
-        <Button variant="primary" onClick={stepper.play} title="Auto-play">
+        <TipButton variant="primary" tip="Auto-play" onClick={stepper.play}>
           <IconPlay /> Start
-        </Button>
-        <Button onClick={stepper.back} disabled={!stepper.canBack} title="Back (← key)">
+        </TipButton>
+        <TipButton tip="Back (← key)" onClick={stepper.back} disabled={!stepper.canBack}>
           <IconPrev /> Back
-        </Button>
-        <Button onClick={stepper.step} title="Step (→ or Space)">
+        </TipButton>
+        <TipButton tip="Step (→ or Space)" onClick={stepper.step}>
           <IconNext /> Step
-        </Button>
-        <Button onClick={stepper.reset} title="Reset (R key)">
+        </TipButton>
+        <TipButton tip="Reset (R key)" onClick={stepper.reset}>
           <IconReset /> Reset
-        </Button>
+        </TipButton>
         <SpeedSlider value={4000 - delay} onChange={setDelay} />
       </div>
       <p className="font-mono text-[11px] text-text-hint">
@@ -221,7 +220,7 @@ export function BinarySearchView({ active }: { active: boolean }) {
 
       <Legend
         items={[
-          { swatch: 'bg-accent/10 border-accent/50', label: '[l, r] window' },
+          { swatch: 'bg-primary/10 border-primary/50', label: '[l, r] window' },
           { swatch: 'bg-highlight/15 border-highlight', label: 'mid' },
           { swatch: 'bg-success/15 border-success', label: 'answer' },
           { swatch: 'border-line opacity-50', label: 'discarded' },

@@ -31,7 +31,7 @@ export function CodePanel({
               <motion.div
                 layoutId={`code-hl-${id}`}
                 transition={calm ? { duration: 0 } : { type: 'spring', stiffness: 600, damping: 44 }}
-                className="absolute inset-y-0 left-0 right-0 border-l-2 border-accent bg-accent/8"
+                className="absolute inset-y-0 left-0 right-0 border-l-2 border-primary bg-primary/8"
               />
             )}
             <span className="relative w-9 shrink-0 select-none pr-2.5 text-right text-text-hint">

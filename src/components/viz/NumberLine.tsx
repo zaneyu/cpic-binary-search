@@ -89,20 +89,20 @@ export function NumberLine({ lo, hi, l, r, mid, ans, finished, trueGoodLo, trueG
         {!finished && l <= r && (
           <>
             <motion.div
-              className="absolute top-[60px] h-1 bg-accent"
+              className="absolute top-[60px] h-1 bg-primary"
               style={{ width: Math.max(2, x(r) - x(l)) }}
               animate={{ x: x(l) }}
               transition={t}
             />
             <motion.div
-              className="absolute top-[28px] -translate-x-1/2 whitespace-nowrap text-[11px] font-medium text-accent tabular-nums"
+              className="absolute top-[28px] -translate-x-1/2 whitespace-nowrap text-[11px] font-medium text-primary tabular-nums"
               animate={{ x: x(l) }}
               transition={t}
             >
               l={l}
             </motion.div>
             <motion.div
-              className="absolute top-[84px] -translate-x-1/2 whitespace-nowrap text-[11px] font-medium text-accent tabular-nums"
+              className="absolute top-[84px] -translate-x-1/2 whitespace-nowrap text-[11px] font-medium text-primary tabular-nums"
               animate={{ x: x(r) }}
               transition={t}
             >

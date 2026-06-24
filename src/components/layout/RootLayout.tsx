@@ -2,14 +2,16 @@ import { AnimatePresence, motion, MotionConfig } from 'motion/react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { AmbientBackground } from './AmbientBackground'
 import { TopNav } from './TopNav'
+import { TooltipProvider } from '../ui/tooltip'
 import { easeOutExpo } from '../../lib/motion'
 
 export function RootLayout() {
   const location = useLocation()
   return (
     <MotionConfig reducedMotion="user">
-      <AmbientBackground />
-      <TopNav />
+      <TooltipProvider delayDuration={200}>
+        <AmbientBackground />
+        <TopNav />
       <main className="mx-auto max-w-[920px] pb-24 pt-5 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))]">
         <AnimatePresence mode="wait">
           <motion.div
@@ -23,6 +25,7 @@ export function RootLayout() {
           </motion.div>
         </AnimatePresence>
       </main>
+      </TooltipProvider>
     </MotionConfig>
   )
 }

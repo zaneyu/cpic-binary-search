@@ -98,10 +98,31 @@
   --color-text-hint: var(--text-hint);
   --color-line: var(--border);
   --color-line-strong: var(--border-strong);
-  --color-accent: var(--accent);
   --color-accent-dim: var(--accent-dim);
   --color-accent-2: var(--accent-2);
   --color-accent-3: var(--accent-3);
+
+  /* ---- shadcn/ui semantic tokens, mapped onto the brand palette ---- */
+  --color-background: var(--bg);
+  --color-foreground: var(--text);
+  --color-card: var(--surface);
+  --color-card-foreground: var(--text);
+  --color-popover: var(--surface-elevated);
+  --color-popover-foreground: var(--text);
+  --color-primary: var(--accent);
+  --color-primary-foreground: var(--bg);
+  --color-secondary: var(--surface-muted);
+  --color-secondary-foreground: var(--text);
+  --color-muted: var(--surface-muted);
+  --color-muted-foreground: var(--text-muted);
+  --color-accent: var(--surface-elevated);
+  --color-accent-foreground: var(--text);
+  --color-destructive: var(--danger);
+  --color-destructive-foreground: var(--bg);
+  --color-border: var(--border);
+  --color-input: var(--border-strong);
+  --color-ring: var(--accent);
+  --radius: 0.25rem;
   --color-success: var(--success);
   --color-danger: var(--danger);
   --color-warning: var(--warning);

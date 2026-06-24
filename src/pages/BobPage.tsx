@@ -52,7 +52,7 @@ function RangeLine({ state }: { state: BobState }) {
       <div className="relative mx-auto h-9 max-w-[720px]">
         <div className="absolute inset-x-0 top-3.5 h-1 rounded bg-surface-muted" />
         <motion.div
-          className={cn('absolute top-3 h-2 rounded-[2px]', state.rangeWon ? 'bg-success' : 'bg-accent')}
+          className={cn('absolute top-3 h-2 rounded-[2px]', state.rangeWon ? 'bg-success' : 'bg-primary')}
           animate={{
             left: `${state.rangeWon ? state.target : state.lo}%`,
             width: `${state.rangeWon ? 0.6 : Math.max(0.5, state.hi - state.lo)}%`,
@@ -147,7 +147,7 @@ export function BobPage() {
             disabled={state.gameOver}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && makeGuess()}
-            className="w-24 text-center text-base font-semibold text-accent"
+            className="w-24 text-center text-base font-semibold text-primary"
           />
           <Button variant="primary" onClick={makeGuess} disabled={state.gameOver}>
             Guess
@@ -187,7 +187,7 @@ export function BobPage() {
             >
               <RichText
                 html={state.hintHtml}
-                className="prose-sans rounded-[3px] border border-line-strong bg-surface-muted px-4 py-3 text-center text-sm leading-relaxed text-text-muted [&_code]:rounded-[2px] [&_code]:bg-surface [&_code]:px-1.5 [&_code]:font-mono [&_code]:text-xs [&_code]:text-accent"
+                className="prose-sans rounded-[3px] border border-line-strong bg-surface-muted px-4 py-3 text-center text-sm leading-relaxed text-text-muted [&_code]:rounded-[2px] [&_code]:bg-surface [&_code]:px-1.5 [&_code]:font-mono [&_code]:text-xs [&_code]:text-primary"
               />
             </motion.div>
           )}

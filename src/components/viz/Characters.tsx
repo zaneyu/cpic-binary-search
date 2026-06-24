@@ -7,7 +7,7 @@ function Bubble({ who, bubble }: { who: 'you' | 'bob'; bubble: BobBubble | { tex
   const kind = bubble && 'kind' in bubble ? bubble.kind : 'normal'
   const tone =
     who === 'you'
-      ? 'bg-accent/15 border-accent/50 text-accent'
+      ? 'bg-primary/15 border-primary/50 text-primary'
       : kind === 'found'
         ? 'bg-success/20 border-success/60 text-success text-[18px]'
         : kind === 'invalid'

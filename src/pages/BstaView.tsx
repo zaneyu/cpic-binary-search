@@ -11,7 +11,8 @@ import {
 import { useStepper } from '../hooks/useStepper'
 import { RichText } from '../lib/math'
 import { PROBLEM_META, parseProblem, type ProblemKey } from '../data/bstaContent'
-import { Button, Segmented, SpeedSlider, Switch, TextInput } from '../components/ui/controls'
+import { Segmented, SpeedSlider, Switch, TextInput, TipButton } from '../components/ui/controls'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select'
 import { IconNext, IconPlay, IconPrev, IconReset } from '../components/ui/icons'
 import { CodePanel } from '../components/viz/CodePanel'
 import { Legend } from '../components/viz/Legend'
@@ -126,14 +127,13 @@ export function BstaView({ active }: { active: boolean }) {
           Problem and check function
         </h2>
         <Segmented<ProblemKey>
-          groupId="bsta-problem"
           ariaLabel="Problem"
           value={problemKey}
           onChange={switchProblem}
           options={(['logs', 'ducks', 'custom'] as ProblemKey[]).map((k) => ({ value: k, label: PROBLEM_META[k].label }))}
         />
         <RichText
-          className="prose-sans mt-2.5 max-w-[70ch] text-sm leading-relaxed text-text-muted [&_code]:rounded-[2px] [&_code]:bg-surface-muted [&_code]:px-1.5 [&_code]:font-mono [&_code]:text-xs [&_code]:text-accent [&_em]:text-text-muted"
+          className="prose-sans mt-2.5 max-w-[70ch] text-sm leading-relaxed text-text-muted [&_code]:rounded-[2px] [&_code]:bg-surface-muted [&_code]:px-1.5 [&_code]:font-mono [&_code]:text-xs [&_code]:text-primary [&_em]:text-text-muted"
           html={meta.desc}
         />
       </section>
@@ -141,20 +141,24 @@ export function BstaView({ active }: { active: boolean }) {
       <div className="grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-2">
         {meta.params.map((p) =>
           p.kind === 'select' ? (
-            <label key={p.id} className="rounded-[3px] border border-line bg-surface px-2.5 py-2">
+            <div key={p.id} className="rounded-[3px] border border-line bg-surface px-2.5 py-2">
               <span className="mb-1 block text-[11px] text-text-muted">{p.label}</span>
-              <select
-                className="h-8 w-full cursor-pointer touch-manipulation rounded-[2px] border border-line-strong bg-surface-muted px-2 font-mono text-[13px] text-text outline-none transition-colors pointer-coarse:min-h-11 pointer-coarse:text-base focus:border-accent focus:ring-1 focus:ring-accent/40"
+              <Select
                 value={values[p.id] ?? p.value}
-                onChange={(e) => setValues((v) => ({ ...v, [p.id]: e.target.value }))}
+                onValueChange={(val) => setValues((v) => ({ ...v, [p.id]: val }))}
               >
-                {p.options.map((o) => (
-                  <option key={o} value={o}>
-                    {o}
-                  </option>
-                ))}
-              </select>
-            </label>
+                <SelectTrigger size="sm" className="w-full rounded-[2px] bg-surface-muted font-mono text-[13px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {p.options.map((o) => (
+                    <SelectItem key={o} value={o} className="font-mono text-[13px]">
+                      {o}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           ) : (
             <label key={p.id} className="rounded-[3px] border border-line bg-surface px-2.5 py-2">
               <span className="mb-1 block text-[11px] text-text-muted">{p.label}</span>
@@ -176,7 +180,7 @@ export function BstaView({ active }: { active: boolean }) {
             spellCheck={false}
             value={fnText}
             onChange={(e) => setFnText(e.target.value)}
-            className="min-h-[60px] w-full resize-y touch-manipulation rounded-[2px] border border-line-strong bg-surface-muted px-2.5 py-2 font-mono text-xs leading-[1.55] text-text outline-none transition-colors pointer-coarse:text-[16px] focus:border-accent focus:ring-1 focus:ring-accent/40"
+            className="min-h-[60px] w-full resize-y touch-manipulation rounded-[2px] border border-line-strong bg-surface-muted px-2.5 py-2 font-mono text-xs leading-[1.55] text-text outline-none transition-colors pointer-coarse:text-[16px] focus:border-primary focus:ring-1 focus:ring-primary/40"
           />
         </div>
       )}
@@ -184,18 +188,18 @@ export function BstaView({ active }: { active: boolean }) {
       <CodePanel id="bsta" lines={codeLines} activeLine={s.activeLine} />
 
       <div className="flex flex-wrap items-center gap-2.5">
-        <Button variant="primary" onClick={stepper.play} title="Auto-play">
+        <TipButton variant="primary" tip="Auto-play" onClick={stepper.play}>
           <IconPlay /> Start
-        </Button>
-        <Button onClick={stepper.back} disabled={!stepper.canBack} title="Back (← key)">
+        </TipButton>
+        <TipButton tip="Back (← key)" onClick={stepper.back} disabled={!stepper.canBack}>
           <IconPrev /> Back
-        </Button>
-        <Button onClick={stepper.step} title="Step (→ or Space)">
+        </TipButton>
+        <TipButton tip="Step (→ or Space)" onClick={stepper.step}>
           <IconNext /> Step
-        </Button>
-        <Button onClick={stepper.reset} title="Reset (R key)">
+        </TipButton>
+        <TipButton tip="Reset (R key)" onClick={stepper.reset}>
           <IconReset /> Reset
-        </Button>
+        </TipButton>
         <SpeedSlider value={4000 - delay} onChange={setDelay} />
       </div>
       <p className="font-mono text-[11px] text-text-hint">
@@ -225,7 +229,7 @@ export function BstaView({ active }: { active: boolean }) {
 
       <Legend
         items={[
-          { swatch: 'bg-accent border-accent', label: '[l, r] window' },
+          { swatch: 'bg-primary border-primary', label: '[l, r] window' },
           { swatch: 'bg-highlight border-highlight', label: 'mid' },
           { swatch: 'bg-success border-success', label: 'ans' },
           { swatch: 'bg-success/15 border-success/50', label: 'true region' },

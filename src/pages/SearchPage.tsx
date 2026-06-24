@@ -1,38 +1,32 @@
 import { useState } from 'react'
-import { Segmented } from '../components/ui/controls'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs'
 import { BinarySearchView } from './BinarySearchView'
 import { BstaView } from './BstaView'
 
 type Surface = 'search' | 'bsta'
 
+const triggerCls =
+  'h-auto flex-none px-3.5 py-2 font-mono text-[13px] text-text-muted after:bg-primary data-[state=active]:text-primary dark:data-[state=active]:text-primary'
+
 export function SearchPage() {
   const [tab, setTab] = useState<Surface>('search')
   return (
-    <div className="space-y-5">
-      <Segmented<Surface>
-        groupId="surface"
-        ariaLabel="Surface"
-        className="w-full justify-start sm:w-auto"
-        value={tab}
-        onChange={setTab}
-        panelId={(v) => `panel-surface-${v}`}
-        options={[
-          { value: 'search', label: 'Binary search' },
-          { value: 'bsta', label: 'Binary search the answer' },
-        ]}
-      />
-      {/* keep both mounted so state persists; gate keyboard via `active` */}
-      <div
-        id="panel-surface-search"
-        role="tabpanel"
-        aria-labelledby="tab-surface-search"
-        hidden={tab !== 'search'}
-      >
+    <Tabs value={tab} onValueChange={(v) => setTab(v as Surface)} className="space-y-5">
+      <TabsList variant="line" aria-label="Surface" className="h-auto w-full justify-start gap-1 border-b border-line-strong">
+        <TabsTrigger value="search" className={triggerCls}>
+          Binary search
+        </TabsTrigger>
+        <TabsTrigger value="bsta" className={triggerCls}>
+          Binary search the answer
+        </TabsTrigger>
+      </TabsList>
+      {/* forceMount keeps both views mounted so their state persists across switches */}
+      <TabsContent value="search" forceMount hidden={tab !== 'search'}>
         <BinarySearchView active={tab === 'search'} />
-      </div>
-      <div id="panel-surface-bsta" role="tabpanel" aria-labelledby="tab-surface-bsta" hidden={tab !== 'bsta'}>
+      </TabsContent>
+      <TabsContent value="bsta" forceMount hidden={tab !== 'bsta'}>
         <BstaView active={tab === 'bsta'} />
-      </div>
-    </div>
+      </TabsContent>
+    </Tabs>
   )
 }
