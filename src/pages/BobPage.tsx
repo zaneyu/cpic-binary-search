@@ -7,7 +7,7 @@ import { RichText } from '../lib/math'
 import { Button, TextInput } from '../components/ui/controls'
 import { Characters } from '../components/viz/Characters'
 
-const CONFETTI = ['#5fb8d4', '#b889e8', '#f08aa8', '#f0c674', '#6dc395']
+const CONFETTI = ['#6cb6ff', '#d2a8ff', '#ff9a8b', '#e3b341', '#7ee787']
 
 function Confetti() {
   const calm = useCalmMotion()
@@ -51,8 +51,7 @@ function RangeLine({ state }: { state: BobState }) {
       <div className="relative mx-auto h-9 max-w-[720px]">
         <div className="absolute inset-x-0 top-3.5 h-1 rounded bg-surface-muted" />
         <motion.div
-          className={cn('absolute top-3 h-2 rounded', state.rangeWon ? 'bg-success' : '')}
-          style={state.rangeWon ? undefined : { backgroundImage: 'var(--grad-accent)' }}
+          className={cn('absolute top-3 h-2 rounded-[2px]', state.rangeWon ? 'bg-success' : 'bg-accent')}
           animate={{
             left: `${state.rangeWon ? state.target : state.lo}%`,
             width: `${state.rangeWon ? 0.6 : Math.max(0.5, state.hi - state.lo)}%`,
@@ -110,15 +109,18 @@ export function BobPage() {
 
   return (
     <div className="space-y-4">
-      <div className="text-center">
-        <h1 className="text-[26px] font-semibold tracking-tight text-heading">Guess Bob's score</h1>
+      <header className="space-y-1">
+        <div className="font-mono text-[12px] text-text-hint">// game · guess_the_number</div>
+        <h1 className="font-mono text-xl font-semibold tracking-tight text-heading">
+          guess bob's score<span className="caret align-middle" />
+        </h1>
         <RichText
-          className="mt-1 text-sm text-text-muted"
+          className="mt-1 font-mono text-[13px] text-text-muted"
           html={'Bob is thinking of a whole number $s$ between $0$ and $100$. Guess it in as few tries as you can!'}
         />
-      </div>
+      </header>
 
-      <div className="relative overflow-hidden rounded-xl border border-accent-2/20 bg-[linear-gradient(135deg,rgba(95,184,212,0.025),rgba(184,137,232,0.045)_60%,rgba(240,138,168,0.035))] p-6 shadow-[0_8px_40px_rgba(184,137,232,0.08)]">
+      <div className="relative overflow-hidden rounded-[3px] border border-line-strong bg-surface p-6">
         {state.gameOver && <Confetti />}
         <Characters
           youFace={state.youFace}
@@ -153,16 +155,16 @@ export function BobPage() {
         </div>
 
         <div className="flex flex-wrap justify-center gap-3.5 text-[13px]">
-          <div className="rounded-md bg-surface-muted px-3.5 py-1.5 text-text-muted">
+          <div className="rounded-[3px] border border-line bg-surface-muted px-3.5 py-1.5 text-text-muted">
             Guesses: <strong className="ml-1 text-text tabular-nums">{state.guessCount}</strong>
           </div>
-          <div className="rounded-md bg-surface-muted px-3.5 py-1.5 text-text-muted">
+          <div className="rounded-[3px] border border-line bg-surface-muted px-3.5 py-1.5 text-text-muted">
             Optimal max: <strong className="ml-1 text-text">7</strong>
           </div>
           <div
             className={cn(
-              'rounded-md px-3.5 py-1.5',
-              state.rangeWon ? 'bg-success/15 text-success' : 'bg-surface-muted text-text-muted',
+              'rounded-[3px] border px-3.5 py-1.5',
+              state.rangeWon ? 'border-success/40 bg-success/15 text-success' : 'border-line bg-surface-muted text-text-muted',
             )}
           >
             {state.rangeWon ? 'You won in: ' : 'Range size: '}
@@ -184,7 +186,7 @@ export function BobPage() {
             >
               <RichText
                 html={state.hintHtml}
-                className="rounded-lg border border-accent-2/28 bg-surface-muted px-4 py-3 text-center text-[13px] leading-relaxed text-text-muted [&_code]:rounded [&_code]:bg-bg [&_code]:px-1.5 [&_code]:font-mono [&_code]:text-xs [&_code]:text-accent"
+                className="rounded-[3px] border border-line-strong bg-surface-muted px-4 py-3 text-center font-mono text-[13px] leading-relaxed text-text-muted [&_code]:rounded-[2px] [&_code]:bg-surface [&_code]:px-1.5 [&_code]:text-xs [&_code]:text-accent"
               />
             </motion.div>
           )}

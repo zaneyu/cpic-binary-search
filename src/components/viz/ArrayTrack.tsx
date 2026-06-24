@@ -14,27 +14,19 @@ interface Props {
   excluded: Set<number>
 }
 
-type Target = {
-  backgroundColor: string
-  borderColor: string
-  color: string
-  scale: number
-  opacity: number
-  boxShadow: string
-}
+type Target = { backgroundColor: string; borderColor: string; color: string; opacity: number }
 
 const NEUTRAL: Target = {
-  backgroundColor: 'rgba(140,160,200,0.04)',
-  borderColor: 'var(--border)',
+  backgroundColor: 'rgba(0,0,0,0)',
+  borderColor: 'var(--border-strong)',
   color: 'var(--text)',
-  scale: 1,
   opacity: 1,
-  boxShadow: '0 0 0 rgba(0,0,0,0)',
 }
 
 export function ArrayTrack({ arr, mode, l, r, mid, ans, finished, foundIdx, excluded }: Props) {
   return (
-    <div className="flex flex-wrap justify-center gap-1.5 py-5">
+    <div className="flex flex-wrap items-start justify-center gap-x-1 gap-y-3 py-5 font-mono">
+      <span className="self-stretch pt-2.5 text-lg text-text-hint">[</span>
       {arr.map((v, i) => {
         const inRange = !finished && i >= l && i <= r
         const isMid = i === mid && !finished
@@ -43,54 +35,32 @@ export function ArrayTrack({ arr, mode, l, r, mid, ans, finished, foundIdx, excl
         const isExcluded = excluded.has(i) || (finished && foundIdx === -1 && mode === 'search')
 
         let t: Target = { ...NEUTRAL }
-        if (isFinal) {
-          t = {
-            backgroundColor: 'rgba(109,195,149,0.18)',
-            borderColor: 'rgba(109,195,149,0.6)',
-            color: 'var(--success)',
-            scale: 1.07,
-            opacity: 1,
-            boxShadow: '0 0 24px rgba(109,195,149,0.5)',
-          }
-        } else if (isMid) {
-          t = {
-            backgroundColor: 'rgba(240,198,116,0.18)',
-            borderColor: 'rgba(240,198,116,0.6)',
-            color: 'var(--highlight)',
-            scale: 1.07,
-            opacity: 1,
-            boxShadow: '0 0 22px rgba(240,198,116,0.42)',
-          }
-        } else if (inRange) {
-          t = {
-            backgroundColor: 'rgba(95,184,212,0.12)',
-            borderColor: 'rgba(95,184,212,0.4)',
-            color: 'var(--accent)',
-            scale: 1,
-            opacity: 1,
-            boxShadow: '0 0 0 rgba(0,0,0,0)',
-          }
-        } else if (isExcluded) {
-          t = { ...NEUTRAL, opacity: 0.3, scale: 0.96 }
-        }
+        if (isFinal)
+          t = { backgroundColor: 'rgba(126,231,135,0.12)', borderColor: 'var(--success)', color: 'var(--success)', opacity: 1 }
+        else if (isMid)
+          t = { backgroundColor: 'rgba(227,179,65,0.12)', borderColor: 'var(--highlight)', color: 'var(--highlight)', opacity: 1 }
+        else if (inRange)
+          t = { backgroundColor: 'rgba(108,182,255,0.08)', borderColor: 'rgba(108,182,255,0.5)', color: 'var(--accent)', opacity: 1 }
+        else if (isExcluded) t = { ...NEUTRAL, opacity: 0.28 }
 
         return (
-          <motion.div
-            key={i}
-            className="relative flex h-[52px] min-w-[40px] flex-col items-center justify-center rounded-md border px-1.5 text-sm font-medium"
-            animate={t}
-            transition={springs.gentle}
-          >
+          <div key={i} className="relative flex flex-col items-center">
+            <motion.div
+              className="flex h-[46px] min-w-[40px] items-center justify-center rounded-[2px] border px-2 text-sm font-medium tabular-nums"
+              animate={t}
+              transition={springs.snappy}
+            >
+              {v}
+            </motion.div>
+            <span className="mt-1 text-[10px] text-text-hint">{i}</span>
             {isAnsSoFar && !isMid && !isFinal && (
-              <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-[3px] bg-bg px-1.5 text-[10px] font-medium text-accent">
-                ans
-              </span>
+              <span className="absolute -top-4 text-[10px] text-accent">ans</span>
             )}
-            <span>{v}</span>
-            <span className="mt-0.5 text-[10px] font-normal opacity-55">{i}</span>
-          </motion.div>
+            {isMid && <span className="absolute -bottom-3.5 text-[11px] leading-none text-highlight">▲</span>}
+          </div>
         )
       })}
+      <span className="self-stretch pt-2.5 text-lg text-text-hint">]</span>
     </div>
   )
 }

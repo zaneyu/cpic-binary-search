@@ -106,17 +106,20 @@ export function BstaView({ active }: { active: boolean }) {
 
   return (
     <div className="space-y-4">
-      <header>
-        <h1 className="text-2xl font-semibold tracking-tight text-heading">Binary search the answer</h1>
+      <header className="space-y-1">
+        <div className="font-mono text-[12px] text-text-hint">// search · binary_search_answer.cpp</div>
+        <h1 className="font-mono text-xl font-semibold tracking-tight text-heading">
+          binary search the answer<span className="caret align-middle" />
+        </h1>
         <RichText
-          className="mt-1.5 text-sm leading-relaxed text-text-muted"
+          className="mt-1 font-mono text-[13px] leading-relaxed text-text-muted"
           html={
             'Sometimes the thing you\'re looking for isn\'t in a list — it\'s a number in a range $[l, r]$. You have a $\\text{check}(x)$ that says "yes that works" or "no it doesn\'t"; pick a guess $x$, test it, narrow down. Works whenever $\\text{check}$ has a clean cutoff: once it flips, it never flips back.'
           }
         />
       </header>
 
-      <section className="rounded-md border border-accent-2/16 bg-[linear-gradient(135deg,rgba(95,184,212,0.025),rgba(184,137,232,0.045)_60%,rgba(240,138,168,0.035))] p-4">
+      <section className="rounded-[3px] border border-line-strong bg-surface p-4">
         <Segmented<ProblemKey>
           groupId="bsta-problem"
           ariaLabel="Problem"
@@ -187,8 +190,8 @@ export function BstaView({ active }: { active: boolean }) {
         <SpeedSlider value={4000 - delay} onChange={setDelay} />
       </div>
 
-      <div className="cpic-scroll overflow-x-auto rounded-md border border-line bg-surface px-5 pb-3 pt-4">
-        <div className="mb-2 flex items-center justify-between text-[11px] text-text-muted">
+      <div className="cpic-scroll overflow-x-auto rounded-[3px] border border-line-strong bg-surface px-5 pb-3 pt-4">
+        <div className="mb-2 flex items-center justify-between font-mono text-[11px] text-text-muted">
           <span className="tracking-wide">check(x) for each value of x</span>
           <Switch checked={showAll} onChange={setShowAll} label="Show all results" />
         </div>
@@ -209,7 +212,7 @@ export function BstaView({ active }: { active: boolean }) {
       <StatChips chips={chips} />
       <StatusBar html={hasParams ? s.statusHtml : `<span style="color:var(--danger);font-weight:500;">${parse.error}</span>`} />
 
-      <div className="cpic-scroll max-h-[120px] overflow-y-auto rounded-md border border-line bg-bg px-3 py-2.5 font-mono text-[11px] leading-relaxed text-text-muted">
+      <div className="cpic-scroll max-h-[120px] overflow-y-auto rounded-[3px] border border-line-strong bg-surface-muted px-3 py-2.5 font-mono text-[11px] leading-relaxed text-text-muted">
         {s.traceLines.length === 0 ? (
           <span className="italic text-text-hint">check() trace will appear here as the search runs.</span>
         ) : (

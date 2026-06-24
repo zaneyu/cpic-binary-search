@@ -41,9 +41,8 @@ export function NumberLine({ lo, hi, l, r, mid, ans, finished, trueGoodLo, trueG
   )
 
   return (
-    <div
-      className="cpic-scroll overflow-hidden rounded-md border border-line bg-surface px-5 pb-3 pt-4"
-    >
+    <div className="cpic-scroll overflow-hidden px-1 pb-2 pt-3">
+
       <div ref={ref} className="relative h-[116px] min-w-full">
         {/* track */}
         <div className="absolute left-0 right-0 top-[60px] h-1 rounded bg-surface-muted" />
@@ -62,7 +61,7 @@ export function NumberLine({ lo, hi, l, r, mid, ans, finished, trueGoodLo, trueG
         {!finished && l <= r && (
           <>
             <motion.div
-              className="absolute top-[60px] h-1 rounded bg-accent shadow-[0_0_12px_rgba(95,184,212,0.6)]"
+              className="absolute top-[60px] h-1 bg-accent"
               style={{ width: Math.max(2, x(r) - x(l)) }}
               animate={{ x: x(l) }}
               transition={t}
@@ -88,7 +87,7 @@ export function NumberLine({ lo, hi, l, r, mid, ans, finished, trueGoodLo, trueG
         {mid !== -1 && !finished && (
           <>
             <motion.div
-              className="absolute top-[48px] h-7 w-0.5 bg-highlight shadow-[0_0_10px_rgba(240,198,116,0.7)]"
+              className="absolute top-[48px] h-7 w-0.5 bg-highlight"
               animate={{ x: x(mid) }}
               transition={t}
             />
@@ -106,7 +105,7 @@ export function NumberLine({ lo, hi, l, r, mid, ans, finished, trueGoodLo, trueG
         {ans !== -1 && (
           <>
             <motion.div
-              className="absolute top-[48px] h-7 w-0.5 bg-success shadow-[0_0_10px_rgba(109,195,149,0.7)]"
+              className="absolute top-[48px] h-7 w-0.5 bg-success"
               animate={{ x: x(ans) }}
               transition={t}
             />

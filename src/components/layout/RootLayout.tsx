@@ -10,14 +10,14 @@ export function RootLayout() {
     <MotionConfig reducedMotion="user">
       <AmbientBackground />
       <TopNav />
-      <main className="mx-auto max-w-[860px] px-4 pb-24">
+      <main className="mx-auto max-w-[920px] px-4 pb-24 pt-5">
         <AnimatePresence mode="wait">
           <motion.div
             key={location.pathname}
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.3, ease: easeOutExpo }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.22, ease: easeOutExpo }}
           >
             <Outlet />
           </motion.div>

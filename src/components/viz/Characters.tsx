@@ -22,7 +22,7 @@ function Bubble({ who, bubble }: { who: 'you' | 'bob'; bubble: BobBubble | { tex
           exit={{ opacity: 0, scale: 0.94 }}
           transition={springs.snappy}
           className={cn(
-            'absolute top-1 z-10 whitespace-nowrap rounded-2xl border px-3.5 py-2 text-base font-semibold',
+            'absolute top-1 z-10 whitespace-nowrap rounded-[3px] border px-3 py-1.5 font-mono text-sm font-medium',
             who === 'you' ? 'right-[-6px] sm:right-[-20px]' : 'left-[-6px] sm:left-[-20px]',
             tone,
           )}

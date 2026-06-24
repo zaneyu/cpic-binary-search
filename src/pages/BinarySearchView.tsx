@@ -104,10 +104,13 @@ export function BinarySearchView({ active }: { active: boolean }) {
 
   return (
     <div className="space-y-4">
-      <header>
-        <h1 className="text-2xl font-semibold tracking-tight text-heading">Binary search — CPIC template</h1>
+      <header className="space-y-1">
+        <div className="font-mono text-[12px] text-text-hint">// search · binary_search.cpp</div>
+        <h1 className="font-mono text-xl font-semibold tracking-tight text-heading">
+          binary search<span className="caret align-middle" />
+        </h1>
         <RichText
-          className="mt-1.5 text-sm leading-relaxed text-text-muted"
+          className="mt-1 font-mono text-[13px] leading-relaxed text-text-muted"
           html={
             'Three ways to search a sorted list. Each takes only $O(\\log n)$ steps — far faster than checking elements one by one ($O(n)$). We keep two markers $l$ and $r$ for the part still to check, and loop while $l \\le r$. The highlighted line is the one running right now.'
           }
@@ -129,7 +132,7 @@ export function BinarySearchView({ active }: { active: boolean }) {
       </div>
       <p className={hintWarn ? 'text-xs text-danger' : 'text-xs text-text-hint'}>{hint}</p>
 
-      <section className="rounded-md border border-accent-2/16 bg-[linear-gradient(135deg,rgba(95,184,212,0.025),rgba(184,137,232,0.045)_60%,rgba(240,138,168,0.035))] p-4">
+      <section className="rounded-[3px] border border-line-strong bg-surface p-4">
         <Segmented<Mode>
           groupId="search-mode"
           ariaLabel="Search mode"

@@ -1,8 +1,8 @@
 import { motion } from 'motion/react'
 import { cn } from '../../lib/cn'
-import { springs, useCalmMotion } from '../../lib/motion'
+import { useCalmMotion } from '../../lib/motion'
 
-/** C++ pseudocode with an active line that glides as the search runs. */
+/** C++ pseudocode with a line-number gutter and an editor-style active line. */
 export function CodePanel({
   lines,
   activeLine,
@@ -16,29 +16,32 @@ export function CodePanel({
 }) {
   const calm = useCalmMotion()
   return (
-    <pre
+    <div
       className={cn(
-        'cpic-scroll overflow-x-auto rounded-md border border-line bg-bg px-3 py-3 font-mono text-xs leading-[1.65] text-text-muted',
+        'cpic-scroll overflow-x-auto rounded-[3px] border border-line-strong bg-surface-muted py-1.5 font-mono text-xs leading-[1.7]',
         className,
       )}
     >
       {lines.map((line, i) => {
         const active = i === activeLine
         return (
-          <div key={i} className="relative px-1">
+          <div key={i} className="relative flex">
             {active && (
               <motion.div
                 layoutId={`code-hl-${id}`}
-                transition={calm ? { duration: 0 } : springs.snappy}
-                className="absolute inset-0 rounded-[3px] bg-highlight/15 ring-1 ring-highlight/30"
+                transition={calm ? { duration: 0 } : { type: 'spring', stiffness: 600, damping: 44 }}
+                className="absolute inset-y-0 left-0 right-0 border-l-2 border-accent bg-accent/8"
               />
             )}
-            <span className={cn('relative whitespace-pre', active && 'text-highlight')}>
+            <span className="relative w-9 shrink-0 select-none pr-2.5 text-right text-text-hint/70">
+              {i + 1}
+            </span>
+            <span className={cn('relative whitespace-pre pr-4', active ? 'text-text' : 'text-text-muted')}>
               {line || ' '}
             </span>
           </div>
         )
       })}
-    </pre>
+    </div>
   )
 }
