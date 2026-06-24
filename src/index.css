@@ -14,9 +14,19 @@
   --surface-elevated: #161a24;
   --text: #c5cdd9;
   --text-muted: #8a93a6;
-  --text-hint: #5a6273;
+  --text-hint: #7b8497;
   --border: rgba(180, 200, 235, 0.09);
   --border-strong: rgba(180, 200, 235, 0.17);
+  /* ambient backdrop */
+  --dot: rgba(180, 200, 235, 0.05);
+  --scan: rgba(180, 200, 235, 0.018);
+  --glow: rgba(108, 182, 255, 0.12);
+  --glow-2: rgba(210, 168, 255, 0.07);
+  /* animated fills (kept literal so Motion can interpolate; theme-aware) */
+  --fill-success: rgba(126, 231, 135, 0.12);
+  --fill-mid: rgba(227, 179, 65, 0.12);
+  --fill-range: rgba(108, 182, 255, 0.08);
+  --border-range: rgba(108, 182, 255, 0.5);
   --accent: #6cb6ff;   /* blue — keyword / primary */
   --accent-dim: #3d6da8;
   --accent-2: #d2a8ff; /* purple */
@@ -42,9 +52,19 @@
     --surface-elevated: #ffffff;
     --text: #1f2328;
     --text-muted: #59636e;
-    --text-hint: #818b98;
+    --text-hint: #656d78;
     --border: rgba(31, 35, 40, 0.12);
     --border-strong: rgba(31, 35, 40, 0.24);
+    /* ambient backdrop */
+    --dot: rgba(31, 35, 40, 0.05);
+    --scan: rgba(31, 35, 40, 0.015);
+    --glow: rgba(9, 105, 218, 0.07);
+    --glow-2: rgba(130, 80, 223, 0.05);
+    /* animated fills (theme-aware) */
+    --fill-success: rgba(26, 127, 55, 0.13);
+    --fill-mid: rgba(154, 103, 0, 0.13);
+    --fill-range: rgba(9, 105, 218, 0.10);
+    --border-range: rgba(9, 105, 218, 0.5);
     --accent: #0969da;
     --accent-dim: #4493e0;
     --accent-2: #8250df;
@@ -102,15 +122,57 @@ body {
   font-family: var(--font-mono);
   color: var(--text);
   background-color: var(--bg);
-  /* faint terminal grid */
-  background-image:
-    linear-gradient(var(--border) 1px, transparent 1px),
-    linear-gradient(90deg, var(--border) 1px, transparent 1px);
-  background-size: 32px 32px;
-  background-position: -1px -1px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+}
+
+/* ============================================================
+   Ambient backdrop — fixed behind everything (-z-10).
+   A faint dot matrix that vignettes away from the reading
+   column, plus a single cool light source at the top. No
+   full-bleed graph grid, no blurred blob.
+   ============================================================ */
+.cpic-backdrop { position: fixed; inset: 0; z-index: -10; pointer-events: none; }
+
+/* dot matrix, masked so dots concentrate up top and fade into the page */
+.cpic-dots {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(var(--dot) 1.1px, transparent 1.6px);
+  background-size: 26px 26px;
+  background-position: center -1px;
+  -webkit-mask-image: radial-gradient(125% 75% at 50% -8%, #000 0%, #000 38%, transparent 80%);
+  mask-image: radial-gradient(125% 75% at 50% -8%, #000 0%, #000 38%, transparent 80%);
+}
+
+/* one soft cool light source from the top, with a faint secondary tint */
+.cpic-skyglow {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(70% 48% at 50% -12%, var(--glow) 0%, transparent 62%),
+    radial-gradient(46% 34% at 82% -6%, var(--glow-2) 0%, transparent 60%);
+}
+
+/* hairline horizon where the lit sky meets the page — terminal seam */
+.cpic-seam {
+  position: absolute;
+  inset-inline: 0;
+  top: clamp(220px, 34vh, 360px);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-strong) 22%, var(--border-strong) 78%, transparent);
+  opacity: 0.7;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 30%, #000 70%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 30%, #000 70%, transparent);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .cpic-skyglow { animation: skyglow-drift 18s ease-in-out infinite alternate; }
+}
+@keyframes skyglow-drift {
+  from { opacity: 0.85; transform: translateY(-4px); }
+  to   { opacity: 1;    transform: translateY(4px); }
 }
 
 /* Prose uses a legible sans; chrome/data stays mono. */
@@ -163,9 +225,33 @@ body {
 }
 .cpic-range:focus-visible::-webkit-slider-thumb { outline: 2px solid var(--accent); outline-offset: 2px; }
 
+/* Touch: fatten the slider track + thumb for finger control (mouse stays slim). */
+@media (pointer: coarse) {
+  .cpic-range { height: 4px; }
+  .cpic-range::-webkit-slider-thumb { width: 18px; height: 18px; }
+  .cpic-range::-moz-range-thumb { width: 18px; height: 18px; }
+}
+
 .cpic-scroll::-webkit-scrollbar { height: 8px; width: 8px; }
 .cpic-scroll::-webkit-scrollbar-thumb { background: var(--border-strong); }
 .cpic-scroll::-webkit-scrollbar-track { background: transparent; }
+
+/* Horizontal scroll affordance: edge shadows that appear only when there's
+   more to scroll. Cover gradients (background-attachment: local) ride with the
+   content and hide the shadow at each extreme; shadows (scroll) stay pinned to
+   the box. Cover color must match the element's own surface (surface-muted). */
+.cpic-xscroll {
+  background-color: var(--surface-muted);
+  background-image:
+    linear-gradient(to right, var(--surface-muted) 30%, transparent),
+    linear-gradient(to left, var(--surface-muted) 30%, transparent),
+    radial-gradient(farthest-side at 0 50%, rgba(0, 0, 0, 0.34), transparent),
+    radial-gradient(farthest-side at 100% 50%, rgba(0, 0, 0, 0.34), transparent);
+  background-position: left center, right center, left center, right center;
+  background-size: 34px 100%, 34px 100%, 16px 100%, 16px 100%;
+  background-repeat: no-repeat;
+  background-attachment: local, local, scroll, scroll;
+}
 
 .katex { font-size: 1em; }
 .katex-display { margin: 0.4em 0; }

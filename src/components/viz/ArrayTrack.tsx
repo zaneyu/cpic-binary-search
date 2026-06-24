@@ -36,11 +36,11 @@ export function ArrayTrack({ arr, mode, l, r, mid, ans, finished, foundIdx, excl
 
         let t: Target = { ...NEUTRAL }
         if (isFinal)
-          t = { backgroundColor: 'rgba(126,231,135,0.12)', borderColor: 'var(--success)', color: 'var(--success)', opacity: 1 }
+          t = { backgroundColor: 'var(--fill-success)', borderColor: 'var(--success)', color: 'var(--success)', opacity: 1 }
         else if (isMid)
-          t = { backgroundColor: 'rgba(227,179,65,0.12)', borderColor: 'var(--highlight)', color: 'var(--highlight)', opacity: 1 }
+          t = { backgroundColor: 'var(--fill-mid)', borderColor: 'var(--highlight)', color: 'var(--highlight)', opacity: 1 }
         else if (inRange)
-          t = { backgroundColor: 'rgba(108,182,255,0.08)', borderColor: 'rgba(108,182,255,0.5)', color: 'var(--accent)', opacity: 1 }
+          t = { backgroundColor: 'var(--fill-range)', borderColor: 'var(--border-range)', color: 'var(--accent)', opacity: 1 }
         else if (isExcluded) t = { ...NEUTRAL, opacity: 0.28 }
 
         return (

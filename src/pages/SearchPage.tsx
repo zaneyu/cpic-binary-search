@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { cn } from '../lib/cn'
 import { Segmented } from '../components/ui/controls'
 import { BinarySearchView } from './BinarySearchView'
 import { BstaView } from './BstaView'
@@ -16,16 +15,22 @@ export function SearchPage() {
         className="w-full justify-start sm:w-auto"
         value={tab}
         onChange={setTab}
+        panelId={(v) => `panel-surface-${v}`}
         options={[
           { value: 'search', label: 'Binary search' },
           { value: 'bsta', label: 'Binary search the answer' },
         ]}
       />
       {/* keep both mounted so state persists; gate keyboard via `active` */}
-      <div className={cn(tab !== 'search' && 'hidden')}>
+      <div
+        id="panel-surface-search"
+        role="tabpanel"
+        aria-labelledby="tab-surface-search"
+        hidden={tab !== 'search'}
+      >
         <BinarySearchView active={tab === 'search'} />
       </div>
-      <div className={cn(tab !== 'bsta' && 'hidden')}>
+      <div id="panel-surface-bsta" role="tabpanel" aria-labelledby="tab-surface-bsta" hidden={tab !== 'bsta'}>
         <BstaView active={tab === 'bsta'} />
       </div>
     </div>

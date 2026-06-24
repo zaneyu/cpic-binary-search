@@ -69,7 +69,8 @@ export function BstaView({ active }: { active: boolean }) {
     if (!active) return
     const h = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement).tagName?.toLowerCase()
-      if (tag === 'input' || tag === 'textarea' || tag === 'select') return
+      // Don't hijack keys from focused controls — let buttons/tabs/switch handle their own.
+      if (tag === 'input' || tag === 'textarea' || tag === 'select' || tag === 'button') return
       if (e.metaKey || e.ctrlKey || e.altKey) return
       if (e.key === 'ArrowRight' || e.key === ' ' || e.code === 'Space') {
         e.preventDefault()
@@ -138,10 +139,10 @@ export function BstaView({ active }: { active: boolean }) {
       <div className="grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-2">
         {meta.params.map((p) =>
           p.kind === 'select' ? (
-            <label key={p.id} className="rounded-md border border-line bg-surface px-2.5 py-2">
+            <label key={p.id} className="rounded-[3px] border border-line bg-surface px-2.5 py-2">
               <span className="mb-1 block text-[11px] text-text-muted">{p.label}</span>
               <select
-                className="h-7 w-full rounded border border-line bg-bg px-2 text-[13px] text-text outline-none focus:border-accent"
+                className="h-8 w-full rounded-[2px] border border-line-strong bg-surface-muted px-2 font-mono text-[13px] text-text outline-none transition-colors pointer-coarse:min-h-11 focus:border-accent focus:ring-1 focus:ring-accent/40"
                 value={values[p.id] ?? p.value}
                 onChange={(e) => setValues((v) => ({ ...v, [p.id]: e.target.value }))}
               >
@@ -153,11 +154,11 @@ export function BstaView({ active }: { active: boolean }) {
               </select>
             </label>
           ) : (
-            <label key={p.id} className="rounded-md border border-line bg-surface px-2.5 py-2">
+            <label key={p.id} className="rounded-[3px] border border-line bg-surface px-2.5 py-2">
               <span className="mb-1 block text-[11px] text-text-muted">{p.label}</span>
               <TextInput
                 type={p.kind === 'number' ? 'number' : 'text'}
-                className="h-7 w-full"
+                className="h-8 w-full"
                 value={values[p.id] ?? p.value}
                 onChange={(e) => setValues((v) => ({ ...v, [p.id]: e.target.value }))}
               />
@@ -167,13 +168,13 @@ export function BstaView({ active }: { active: boolean }) {
       </div>
 
       {meta.hasCustomFn && (
-        <div className="rounded-md border border-line bg-surface p-3">
+        <div className="rounded-[3px] border border-line bg-surface p-3">
           <div className="mb-1.5 text-[11px] text-text-muted">check(x) — return true if x is "good"</div>
           <textarea
             spellCheck={false}
             value={fnText}
             onChange={(e) => setFnText(e.target.value)}
-            className="min-h-[60px] w-full resize-y rounded border border-line bg-bg px-2.5 py-2 font-mono text-xs leading-[1.55] text-text outline-none focus:border-accent"
+            className="min-h-[60px] w-full resize-y rounded-[2px] border border-line-strong bg-surface-muted px-2.5 py-2 font-mono text-xs leading-[1.55] text-text outline-none transition-colors focus:border-accent focus:ring-1 focus:ring-accent/40"
           />
         </div>
       )}

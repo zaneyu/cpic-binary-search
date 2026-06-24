@@ -1,4 +1,5 @@
-import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode, Ref } from 'react'
+import type { ButtonHTMLAttributes, InputHTMLAttributes, KeyboardEvent, ReactNode, Ref } from 'react'
+import { useRef } from 'react'
 import { motion } from 'motion/react'
 import { cn } from '../../lib/cn'
 import { useCalmMotion } from '../../lib/motion'
@@ -12,6 +13,7 @@ export function Button({
 }: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: Variant }) {
   const base =
     'inline-flex h-9 items-center justify-center gap-1.5 rounded-[3px] px-3.5 font-mono text-[13px] ' +
+    'pointer-coarse:min-h-11 pointer-coarse:px-4 ' +
     'transition-[background,border-color,color,opacity] duration-150 ' +
     'active:translate-y-px disabled:pointer-events-none disabled:opacity-35 ' +
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-bg'
@@ -35,6 +37,7 @@ export function Segmented<T extends string>({
   ariaLabel,
   groupId,
   className,
+  panelId,
 }: {
   options: SegOption<T>[]
   value: T
@@ -42,30 +45,60 @@ export function Segmented<T extends string>({
   ariaLabel?: string
   groupId: string
   className?: string
+  /** When the tabs control a separate panel, return its id so tabs can be wired with `aria-controls`. */
+  panelId?: (v: T) => string
 }) {
   const calm = useCalmMotion()
+  const refs = useRef<(HTMLButtonElement | null)[]>([])
+  const idx = options.findIndex((o) => o.value === value)
+
+  // Roving focus: arrow / Home / End move selection between tabs (ARIA tabs pattern).
+  function onKeyDown(e: KeyboardEvent<HTMLDivElement>) {
+    const last = options.length - 1
+    let next = -1
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next = idx >= last ? 0 : idx + 1
+    else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') next = idx <= 0 ? last : idx - 1
+    else if (e.key === 'Home') next = 0
+    else if (e.key === 'End') next = last
+    else return
+    e.preventDefault()
+    onChange(options[next].value)
+    refs.current[next]?.focus()
+  }
+
   return (
     <div
       role="tablist"
       aria-label={ariaLabel}
+      onKeyDown={onKeyDown}
       className={cn('flex flex-wrap border-b border-line-strong', className)}
     >
-      {options.map((o) => {
+      {options.map((o, i) => {
         const active = o.value === value
         return (
           <button
             key={o.value}
+            ref={(el) => {
+              refs.current[i] = el
+            }}
+            id={`tab-${groupId}-${o.value}`}
+            type="button"
             role="tab"
             aria-selected={active}
+            aria-controls={panelId?.(o.value)}
+            tabIndex={active ? 0 : -1}
             onClick={() => onChange(o.value)}
             className={cn(
-              'relative px-3.5 py-2 font-mono text-[13px] transition-colors',
+              'relative inline-flex items-center justify-center rounded-t-[3px] px-3.5 py-2 font-mono text-[13px] transition-colors',
+              'pointer-coarse:min-h-11',
+              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent/60',
               active ? 'text-accent' : 'text-text-muted hover:text-text',
             )}
           >
             {o.label}
             {active && (
               <motion.span
+                aria-hidden
                 layoutId={`seg-${groupId}`}
                 transition={calm ? { duration: 0 } : { type: 'spring', stiffness: 500, damping: 40 }}
                 className="absolute inset-x-0 -bottom-px h-0.5 bg-accent"
@@ -89,6 +122,7 @@ export function TextInput({
       ref={ref}
       className={cn(
         'h-9 rounded-[3px] border border-line-strong bg-surface-muted px-2.5 font-mono text-[13px] text-text outline-none',
+        'pointer-coarse:min-h-11',
         'transition-colors focus:border-accent focus:ring-1 focus:ring-accent/40',
         className,
       )}
@@ -132,7 +166,7 @@ export function Switch({
       role="switch"
       aria-checked={checked}
       onClick={() => onChange(!checked)}
-      className="inline-flex items-center gap-1.5 font-mono text-[12px] text-text-muted hover:text-text"
+      className="inline-flex items-center gap-1.5 rounded-[2px] py-1 font-mono text-[12px] text-text-muted hover:text-text pointer-coarse:min-h-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
     >
       <span className={cn('select-none', checked ? 'text-accent' : 'text-text-hint')}>
         [{checked ? 'x' : ' '}]

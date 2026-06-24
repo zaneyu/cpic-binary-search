@@ -19,7 +19,7 @@ export function CodePanel({
   return (
     <div
       className={cn(
-        'cpic-scroll overflow-x-auto rounded-[3px] border border-line-strong bg-surface-muted py-1.5 font-mono text-xs leading-[1.7]',
+        'cpic-scroll cpic-xscroll overflow-x-auto rounded-[3px] border border-line-strong py-1.5 font-mono text-xs leading-[1.7]',
         className,
       )}
     >
@@ -34,7 +34,7 @@ export function CodePanel({
                 className="absolute inset-y-0 left-0 right-0 border-l-2 border-accent bg-accent/8"
               />
             )}
-            <span className="relative w-9 shrink-0 select-none pr-2.5 text-right text-text-hint/70">
+            <span className="relative w-9 shrink-0 select-none pr-2.5 text-right text-text-hint">
               {i + 1}
             </span>
             <span className="relative whitespace-pre pr-4 text-text">{highlight(line)}</span>

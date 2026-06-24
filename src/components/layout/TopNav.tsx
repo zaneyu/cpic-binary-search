@@ -13,7 +13,9 @@ function NavTab({ to, label, hint }: { to: string; label: string; hint: string }
       end
       className={({ isActive }) =>
         cn(
-          'flex flex-col rounded-[3px] border px-3 py-1.5 transition-colors',
+          'flex flex-col justify-center rounded-[3px] border px-3 py-1.5 transition-colors',
+          'pointer-coarse:min-h-11',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-bg',
           isActive
             ? 'border-accent bg-accent/12 text-accent'
             : 'border-line-strong text-text-muted hover:border-accent/50 hover:text-text',
@@ -37,7 +39,7 @@ function NavTab({ to, label, hint }: { to: string; label: string; hint: string }
 
 export function TopNav() {
   return (
-    <header className="mx-auto mt-4 max-w-[920px] px-4">
+    <header className="mx-auto mt-4 max-w-[920px] pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))]">
       <nav aria-label="Choose a visualization" className="flex flex-wrap items-center gap-2">
         <span className="font-mono text-[11px] text-text-hint">view:</span>
         {ITEMS.map((i) => (

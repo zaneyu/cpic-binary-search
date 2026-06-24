@@ -3,7 +3,12 @@ import { RichText } from '../../lib/math'
 /** Narration as a terminal log line with a prompt glyph. Renders inline math. */
 export function StatusBar({ html }: { html: string }) {
   return (
-    <div className="flex items-start gap-2.5 rounded-[3px] border border-line-strong bg-surface-muted px-3.5 py-3">
+    <div
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+      className="flex items-start gap-2.5 rounded-[3px] border border-line-strong bg-surface-muted px-3.5 py-3"
+    >
       <span aria-hidden className="select-none pt-px font-mono text-sm text-accent">
         ›
       </span>

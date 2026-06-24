@@ -10,7 +10,7 @@ export function RootLayout() {
     <MotionConfig reducedMotion="user">
       <AmbientBackground />
       <TopNav />
-      <main className="mx-auto max-w-[920px] px-4 pb-24 pt-5">
+      <main className="mx-auto max-w-[920px] pb-24 pt-5 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))]">
         <AnimatePresence mode="wait">
           <motion.div
             key={location.pathname}

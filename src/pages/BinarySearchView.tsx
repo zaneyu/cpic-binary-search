@@ -58,7 +58,8 @@ export function BinarySearchView({ active }: { active: boolean }) {
     if (!active) return
     const h = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement).tagName?.toLowerCase()
-      if (tag === 'input' || tag === 'textarea' || tag === 'select') return
+      // Don't hijack keys from focused controls — let buttons/tabs/switch handle their own.
+      if (tag === 'input' || tag === 'textarea' || tag === 'select' || tag === 'button') return
       if (e.metaKey || e.ctrlKey || e.altKey) return
       if (e.key === 'ArrowRight' || e.key === ' ' || e.code === 'Space') {
         e.preventDefault()
@@ -121,19 +122,29 @@ export function BinarySearchView({ active }: { active: boolean }) {
       </header>
 
       <div className="flex flex-wrap items-center gap-3">
-        <label className="text-sm text-text-muted">Array</label>
+        <label htmlFor="array-input" className="text-sm text-text-muted">
+          Array
+        </label>
         <TextInput
+          id="array-input"
           className="min-w-[200px] flex-1"
           value={arrInput}
           onChange={(e) => setArrInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && loadArray()}
+          aria-describedby="array-hint"
         />
         <Button onClick={loadArray}>Load</Button>
         <Button variant="subtle" onClick={loadRandom}>
           Random
         </Button>
       </div>
-      <p className={hintWarn ? 'text-xs text-danger' : 'text-xs text-text-hint'}>{hint}</p>
+      <p
+        id="array-hint"
+        role={hintWarn ? 'alert' : undefined}
+        className={hintWarn ? 'text-xs text-danger' : 'text-xs text-text-hint'}
+      >
+        {hint}
+      </p>
 
       <section className="rounded-[3px] border border-line-strong bg-surface p-4">
         <Segmented<Mode>
@@ -153,7 +164,7 @@ export function BinarySearchView({ active }: { active: boolean }) {
         {STL_TEMPLATES[mode] && (
           <div className="mt-3">
             <div className="prose-sans mb-1.5 text-xs text-text-muted">Or skip the loop — C++ already has this built in:</div>
-            <pre className="cpic-scroll overflow-x-auto rounded-[3px] border border-line-strong bg-surface-muted px-3 py-3 font-mono text-xs leading-[1.6] text-text">
+            <pre className="cpic-scroll cpic-xscroll overflow-x-auto rounded-[3px] border border-line-strong px-3 py-3 font-mono text-xs leading-[1.6] text-text">
               {STL_TEMPLATES[mode]!.split('\n').map((ln, i) => (
                 <div key={i}>{highlight(ln)}</div>
               ))}
@@ -163,8 +174,11 @@ export function BinarySearchView({ active }: { active: boolean }) {
       </section>
 
       <div className="flex flex-wrap items-center gap-2.5">
-        <label className="text-sm text-text-muted">Target</label>
+        <label htmlFor="target-input" className="text-sm text-text-muted">
+          Target
+        </label>
         <TextInput
+          id="target-input"
           type="number"
           className="w-20 text-center"
           value={targetStr}

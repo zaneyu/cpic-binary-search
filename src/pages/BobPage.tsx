@@ -7,7 +7,8 @@ import { RichText } from '../lib/math'
 import { Button, TextInput } from '../components/ui/controls'
 import { Characters } from '../components/viz/Characters'
 
-const CONFETTI = ['#6cb6ff', '#d2a8ff', '#ff9a8b', '#e3b341', '#7ee787']
+// Token names (not literals) so confetti follows the active theme.
+const CONFETTI = ['--accent', '--accent-2', '--accent-3', '--highlight', '--success']
 
 function Confetti() {
   const calm = useCalmMotion()
@@ -21,7 +22,7 @@ function Confetti() {
           <motion.span
             key={i}
             className="absolute h-2 w-2 rounded-[2px]"
-            style={{ background: CONFETTI[i % CONFETTI.length] }}
+            style={{ background: `var(${CONFETTI[i % CONFETTI.length]})` }}
             initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
             animate={{
               x: Math.cos(angle) * dist,

@@ -32,7 +32,13 @@ export function NumberLine({ lo, hi, l, r, mid, ans, finished, trueGoodLo, trueG
   const [ref, w] = useWidth()
   const calm = useCalmMotion()
   const span = hi - lo
-  const x = (v: number) => (span <= 0 ? w / 2 : ((v - lo) / span) * w)
+  // Inset the scale so the centered end labels (l=, r=, mid=, ticks) never clip at the edges.
+  const PAD = 18
+  const x = (v: number) => {
+    if (span <= 0) return w / 2
+    const inner = Math.max(1, w - PAD * 2)
+    return PAD + ((v - lo) / span) * inner
+  }
   const t = calm ? { duration: 0 } : springs.gentle
 
   const tickCount = Math.min(11, span + 1)
@@ -45,7 +51,7 @@ export function NumberLine({ lo, hi, l, r, mid, ans, finished, trueGoodLo, trueG
 
       <div ref={ref} className="relative h-[116px] min-w-full">
         {/* track */}
-        <div className="absolute left-0 right-0 top-[60px] h-1 rounded bg-surface-muted" />
+        <div className="absolute top-[60px] h-1 rounded bg-surface-muted" style={{ left: 18, right: 18 }} />
 
         {/* good region (direction-aware) */}
         {trueGoodLo !== null && trueGoodHi !== null && (
