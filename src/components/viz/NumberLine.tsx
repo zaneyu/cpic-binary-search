@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState } from 'react'
-import { motion } from 'motion/react'
+import { AnimatePresence, motion } from 'motion/react'
 import { springs, useCalmMotion } from '../../lib/motion'
 
 interface Props {
@@ -46,6 +46,11 @@ export function NumberLine({ lo, hi, l, r, mid, ans, finished, trueGoodLo, trueG
     Math.round(lo + (span * i) / (Math.max(tickCount, 2) - 1)),
   )
 
+  // The monotonic cutoff: the edge of the good region that borders the false
+  // region (the interior edge, not the one pinned to the domain boundary).
+  const cutoff =
+    trueGoodLo !== null && trueGoodHi !== null ? (trueGoodLo > lo ? trueGoodLo : trueGoodHi) : null
+
   return (
     <div className="cpic-scroll overflow-hidden px-1 pb-2 pt-3">
 
@@ -53,13 +58,27 @@ export function NumberLine({ lo, hi, l, r, mid, ans, finished, trueGoodLo, trueG
         {/* track */}
         <div className="absolute top-[60px] h-1 rounded bg-surface-muted" style={{ left: 18, right: 18 }} />
 
-        {/* good region (direction-aware) */}
+        {/* good region (direction-aware) — soft success halo */}
         {trueGoodLo !== null && trueGoodHi !== null && (
           <motion.div
             className="absolute top-[55px] h-[14px] rounded-sm bg-success/12 ring-1 ring-success/40"
-            style={{ width: Math.max(2, x(trueGoodHi) - x(trueGoodLo)) }}
+            style={{ width: Math.max(2, x(trueGoodHi) - x(trueGoodLo)), boxShadow: '0 0 18px -6px var(--success)' }}
             animate={{ x: x(trueGoodLo) }}
             transition={t}
+          />
+        )}
+
+        {/* monotonic cutoff: a glowing threshold where false flips to true */}
+        {cutoff !== null && (
+          <motion.div
+            aria-hidden
+            className="absolute top-[51px] h-[22px] w-px -translate-x-1/2 bg-success"
+            style={{ boxShadow: '0 0 9px 1px var(--success)' }}
+            animate={{ x: x(cutoff), opacity: finished || calm ? 1 : [0.5, 1, 0.5] }}
+            transition={{
+              x: t,
+              opacity: finished || calm ? { duration: 0 } : { duration: 1.9, repeat: Infinity, ease: 'easeInOut' },
+            }}
           />
         )}
 
@@ -106,6 +125,21 @@ export function NumberLine({ lo, hi, l, r, mid, ans, finished, trueGoodLo, trueG
             </motion.div>
           </>
         )}
+
+        {/* answer-found bloom: one-shot radial pulse on resolution */}
+        <AnimatePresence>
+          {finished && ans !== -1 && !calm && (
+            <motion.div
+              key="ans-bloom"
+              aria-hidden
+              className="pointer-events-none absolute top-[39px] h-12 w-12 -translate-x-1/2 rounded-full"
+              style={{ left: x(ans), background: 'radial-gradient(circle, var(--success) 0%, transparent 68%)' }}
+              initial={{ opacity: 0.5, scale: 0.4 }}
+              animate={{ opacity: 0, scale: 2.2 }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            />
+          )}
+        </AnimatePresence>
 
         {/* ans marker */}
         {ans !== -1 && (

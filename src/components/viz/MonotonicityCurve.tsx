@@ -1,6 +1,6 @@
 import { motion } from 'motion/react'
 import { cn } from '../../lib/cn'
-import { springs } from '../../lib/motion'
+import { springs, useCalmMotion } from '../../lib/motion'
 
 const MAX_COLS = 200
 
@@ -13,6 +13,7 @@ interface Props {
 }
 
 export function MonotonicityCurve({ lo, hi, probed, showAll, check }: Props) {
+  const calm = useCalmMotion()
   const span = hi - lo
   if (span < 0) return <div className="h-14" />
   const stride = span + 1 > MAX_COLS ? Math.ceil((span + 1) / MAX_COLS) : 1
@@ -36,6 +37,17 @@ export function MonotonicityCurve({ lo, hi, probed, showAll, check }: Props) {
     cols.push({ x, result, isProbed })
   }
   const annotate = showAll || probed.size > 0
+
+  // The flip: the one place a known false neighbours a known true (monotonic).
+  let boundaryAfter = -1
+  for (let i = 0; i < cols.length - 1; i++) {
+    const a = cols[i].result
+    const b = cols[i + 1].result
+    if (a !== null && b !== null && a !== b) {
+      boundaryAfter = i
+      break
+    }
+  }
 
   return (
     <div className="relative mb-3.5 h-14 overflow-hidden border-b border-line">
@@ -69,13 +81,31 @@ export function MonotonicityCurve({ lo, hi, probed, showAll, check }: Props) {
             title={label}
             aria-label={label}
             className={cn('absolute bottom-0 origin-bottom', cls, isProbed && 'ring-[1.5px] ring-inset ring-highlight')}
-            style={{ left: `${i * colW}%`, width: `${colW}%`, height: h }}
+            style={{
+              left: `${i * colW}%`,
+              width: `${colW}%`,
+              height: h,
+              // light up the true region so the monotone half glows
+              ...(result === true ? { boxShadow: '0 -7px 15px -7px var(--success)' } : null),
+            }}
             initial={{ scaleY: 0.3, opacity: 0 }}
             animate={{ scaleY: 1, opacity: result === null && !showAll ? 0.55 : 1 }}
             transition={springs.gentle}
           />
         )
       })}
+
+      {/* glowing threshold at the false→true flip */}
+      {annotate && boundaryAfter >= 0 && (
+        <motion.div
+          aria-hidden
+          className="pointer-events-none absolute inset-y-0 w-px -translate-x-1/2 bg-success"
+          style={{ left: `${(boundaryAfter + 1) * colW}%`, boxShadow: '0 0 9px 1px var(--success)' }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: calm ? 0.9 : [0.4, 1, 0.4] }}
+          transition={calm ? { duration: 0 } : { duration: 1.9, repeat: Infinity, ease: 'easeInOut' }}
+        />
+      )}
     </div>
   )
 }

@@ -1,6 +1,6 @@
-import { motion } from 'motion/react'
+import { AnimatePresence, motion } from 'motion/react'
 import type { Mode } from '../../engines/searchEngine'
-import { springs } from '../../lib/motion'
+import { springs, useCalmMotion } from '../../lib/motion'
 
 interface Props {
   arr: number[]
@@ -14,16 +14,28 @@ interface Props {
   excluded: Set<number>
 }
 
-type Target = { backgroundColor: string; borderColor: string; color: string; opacity: number }
+// Animated targets: discarded cells recede (the halving), the probe and the
+// answer stand proud. Scale carries the drama; color carries the meaning.
+type Target = {
+  backgroundColor: string
+  borderColor: string
+  color: string
+  opacity: number
+  scale: number
+  y: number
+}
 
 const NEUTRAL: Target = {
   backgroundColor: 'rgba(0,0,0,0)',
   borderColor: 'var(--border-strong)',
   color: 'var(--text)',
   opacity: 1,
+  scale: 1,
+  y: 0,
 }
 
 export function ArrayTrack({ arr, mode, l, r, mid, ans, finished, foundIdx, excluded }: Props) {
+  const calm = useCalmMotion()
   return (
     <div className="flex flex-wrap items-start justify-center gap-x-1 gap-y-3 py-5 font-mono">
       <span className="self-stretch pt-2.5 text-lg text-text-hint">[</span>
@@ -36,22 +48,38 @@ export function ArrayTrack({ arr, mode, l, r, mid, ans, finished, foundIdx, excl
 
         let t: Target = { ...NEUTRAL }
         if (isFinal)
-          t = { backgroundColor: 'var(--fill-success)', borderColor: 'var(--success)', color: 'var(--success)', opacity: 1 }
+          t = { ...NEUTRAL, backgroundColor: 'var(--fill-success)', borderColor: 'var(--success)', color: 'var(--success)', scale: 1.08 }
         else if (isMid)
-          t = { backgroundColor: 'var(--fill-mid)', borderColor: 'var(--highlight)', color: 'var(--highlight)', opacity: 1 }
+          t = { ...NEUTRAL, backgroundColor: 'var(--fill-mid)', borderColor: 'var(--highlight)', color: 'var(--highlight)', scale: 1.06 }
         else if (inRange)
-          t = { backgroundColor: 'var(--fill-range)', borderColor: 'var(--border-range)', color: 'var(--accent)', opacity: 1 }
-        else if (isExcluded) t = { ...NEUTRAL, opacity: 0.28 }
+          t = { ...NEUTRAL, backgroundColor: 'var(--fill-range)', borderColor: 'var(--border-range)', color: 'var(--accent)' }
+        // Discarded: recede into the background — the visible "half is gone".
+        else if (isExcluded) t = { ...NEUTRAL, opacity: 0.16, scale: 0.66, y: 3 }
 
         return (
           <div key={i} className="relative flex flex-col items-center">
-            <motion.div
-              className="flex h-[46px] min-w-[40px] items-center justify-center rounded-[2px] border px-2 text-sm font-medium tabular-nums"
-              animate={t}
-              transition={springs.snappy}
-            >
-              {v}
-            </motion.div>
+            <div className="relative">
+              {/* answer-found bloom: a one-shot radial pulse on resolution */}
+              <AnimatePresence>
+                {isFinal && !calm && (
+                  <motion.span
+                    aria-hidden
+                    className="pointer-events-none absolute -inset-2 rounded-[6px]"
+                    style={{ background: 'radial-gradient(circle, var(--success) 0%, transparent 68%)' }}
+                    initial={{ opacity: 0.55, scale: 0.55 }}
+                    animate={{ opacity: 0, scale: 1.9 }}
+                    transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+                  />
+                )}
+              </AnimatePresence>
+              <motion.div
+                className="relative flex h-[46px] min-w-[40px] items-center justify-center rounded-[2px] border px-2 text-sm font-medium tabular-nums"
+                animate={t}
+                transition={calm ? { duration: 0 } : springs.snappy}
+              >
+                {v}
+              </motion.div>
+            </div>
             <span className="mt-1 text-[10px] text-text-hint">{i}</span>
             {isAnsSoFar && !isMid && !isFinal && (
               <span className="absolute -top-4 text-[10px] text-accent">ans</span>
