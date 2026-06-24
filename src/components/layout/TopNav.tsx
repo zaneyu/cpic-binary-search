@@ -1,36 +1,37 @@
+import type { ReactNode } from 'react'
 import { NavLink } from 'react-router-dom'
 import { cn } from '../../lib/cn'
+import { IconSearch, IconTarget } from '../ui/icons'
 
-const ITEMS = [
-  { to: '/', label: 'Binary search', hint: 'search a sorted list · BSTA' },
-  { to: '/bob', label: "Bob's guessing game", hint: 'play it yourself' },
+const ITEMS: { to: string; label: string; hint: string; icon: ReactNode }[] = [
+  { to: '/', label: 'Binary search', hint: 'search a sorted list · BSTA', icon: <IconSearch /> },
+  { to: '/bob', label: "Bob's guessing game", hint: 'play it yourself', icon: <IconTarget /> },
 ]
 
-function NavTab({ to, label, hint }: { to: string; label: string; hint: string }) {
+function NavTab({ to, label, hint, icon, divide }: (typeof ITEMS)[number] & { divide: boolean }) {
   return (
     <NavLink
       to={to}
       end
       className={({ isActive }) =>
         cn(
-          'flex flex-col justify-center rounded-[3px] border px-3 py-1.5 transition-colors',
-          'pointer-coarse:min-h-11',
-          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-bg',
-          isActive
-            ? 'border-accent bg-accent/12 text-accent'
-            : 'border-line-strong text-text-muted hover:border-accent/50 hover:text-text',
+          'group relative flex items-center gap-2.5 px-4 py-2.5 transition-colors',
+          'pointer-coarse:min-h-12',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent/60',
+          divide && 'border-t border-line-strong sm:border-l sm:border-t-0',
+          isActive ? 'bg-accent/12 text-accent' : 'text-text-muted hover:bg-surface hover:text-text',
         )
       }
     >
       {({ isActive }) => (
         <>
-          <span className="flex items-center gap-1.5 font-mono text-[13px] font-medium leading-tight">
-            <span aria-hidden className={isActive ? 'text-accent' : 'text-text-hint'}>
-              {isActive ? '●' : '○'}
-            </span>
-            {label}
+          <span aria-hidden className={cn('shrink-0', isActive ? 'text-accent' : 'text-text-hint group-hover:text-text-muted')}>
+            {icon}
           </span>
-          <span className="pl-[18px] font-mono text-[10px] text-text-hint">{hint}</span>
+          <span className="flex min-w-0 flex-col leading-tight">
+            <span className="font-mono text-[13px] font-medium">{label}</span>
+            <span className="font-mono text-[10px] text-text-hint">{hint}</span>
+          </span>
         </>
       )}
     </NavLink>
@@ -40,10 +41,12 @@ function NavTab({ to, label, hint }: { to: string; label: string; hint: string }
 export function TopNav() {
   return (
     <header className="mx-auto mt-4 max-w-[920px] pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))]">
-      <nav aria-label="Choose a visualization" className="flex flex-wrap items-center gap-2">
-        <span className="font-mono text-[11px] text-text-hint">view:</span>
-        {ITEMS.map((i) => (
-          <NavTab key={i.to} {...i} />
+      <nav
+        aria-label="Choose a visualization"
+        className="flex flex-col overflow-hidden rounded-[5px] border border-line-strong bg-surface/50 backdrop-blur-sm sm:inline-flex sm:flex-row"
+      >
+        {ITEMS.map((item, i) => (
+          <NavTab key={item.to} {...item} divide={i > 0} />
         ))}
       </nav>
     </header>
