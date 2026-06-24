@@ -53,8 +53,9 @@ export function ArrayTrack({ arr, mode, l, r, mid, ans, finished, foundIdx, excl
           t = { ...NEUTRAL, backgroundColor: 'var(--fill-mid)', borderColor: 'var(--highlight)', color: 'var(--highlight)', scale: 1.06 }
         else if (inRange)
           t = { ...NEUTRAL, backgroundColor: 'var(--fill-range)', borderColor: 'var(--border-range)', color: 'var(--accent)' }
-        // Discarded: recede into the background — the visible "half is gone".
-        else if (isExcluded) t = { ...NEUTRAL, opacity: 0.16, scale: 0.66, y: 3 }
+        // Discarded: recede into the background — clearly "out", but the value
+        // stays legible so a learner can still read what was eliminated.
+        else if (isExcluded) t = { ...NEUTRAL, opacity: 0.32, scale: 0.7, y: 2 }
 
         return (
           <div key={i} className="relative flex flex-col items-center">

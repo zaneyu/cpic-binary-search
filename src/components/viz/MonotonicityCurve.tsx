@@ -102,8 +102,12 @@ export function MonotonicityCurve({ lo, hi, probed, showAll, check }: Props) {
           className="pointer-events-none absolute inset-y-0 w-px -translate-x-1/2 bg-success"
           style={{ left: `${(boundaryAfter + 1) * colW}%`, boxShadow: '0 0 9px 1px var(--success)' }}
           initial={{ opacity: 0 }}
-          animate={{ opacity: calm ? 0.9 : [0.4, 1, 0.4] }}
-          transition={calm ? { duration: 0 } : { duration: 1.9, repeat: Infinity, ease: 'easeInOut' }}
+          animate={{ opacity: calm ? 0.9 : [0.4, 1, 0.4, 1, 0.4, 1, 0.85] }}
+          transition={
+            calm
+              ? { duration: 0 }
+              : { duration: 2.6, times: [0, 0.16, 0.33, 0.5, 0.66, 0.83, 1], ease: 'easeInOut' }
+          }
         />
       )}
     </div>

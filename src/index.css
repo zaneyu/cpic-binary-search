@@ -178,20 +178,6 @@ body {
 /* Prose uses a legible sans; chrome/data stays mono. */
 .prose-sans { font-family: var(--font-sans); }
 
-@keyframes caret-blink {
-  0%, 49% { opacity: 1; }
-  50%, 100% { opacity: 0; }
-}
-.caret {
-  display: inline-block;
-  width: 0.5em;
-  height: 1.05em;
-  margin-left: 1px;
-  translate: 0 0.16em;
-  background: var(--accent);
-  animation: caret-blink 1.1s steps(1) infinite;
-}
-
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -199,7 +185,6 @@ body {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  .caret { animation: none; opacity: 1; }
 }
 
 /* Flat terminal range slider (square accent thumb) */

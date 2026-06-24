@@ -111,7 +111,7 @@ export function BinarySearchView({ active }: { active: boolean }) {
       <header className="space-y-1">
         <div className="font-mono text-[12px] text-text-hint">// search · binary_search.cpp</div>
         <h1 className="font-mono text-xl font-semibold tracking-tight text-heading">
-          binary search<span className="caret align-middle" />
+          binary search
         </h1>
         <RichText
           className="prose-sans mt-1 max-w-[68ch] text-sm leading-relaxed text-text-muted"

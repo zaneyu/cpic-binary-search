@@ -74,10 +74,13 @@ export function NumberLine({ lo, hi, l, r, mid, ans, finished, trueGoodLo, trueG
             aria-hidden
             className="absolute top-[51px] h-[22px] w-px -translate-x-1/2 bg-success"
             style={{ boxShadow: '0 0 9px 1px var(--success)' }}
-            animate={{ x: x(cutoff), opacity: finished || calm ? 1 : [0.5, 1, 0.5] }}
+            animate={{ x: x(cutoff), opacity: finished || calm ? 1 : [0.5, 1, 0.5, 1, 0.5, 1, 0.85] }}
             transition={{
               x: t,
-              opacity: finished || calm ? { duration: 0 } : { duration: 1.9, repeat: Infinity, ease: 'easeInOut' },
+              opacity:
+                finished || calm
+                  ? { duration: 0 }
+                  : { duration: 2.6, times: [0, 0.16, 0.33, 0.5, 0.66, 0.83, 1], ease: 'easeInOut' },
             }}
           />
         )}

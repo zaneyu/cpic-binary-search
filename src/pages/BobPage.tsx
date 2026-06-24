@@ -113,7 +113,7 @@ export function BobPage() {
       <header className="space-y-1">
         <div className="font-mono text-[12px] text-text-hint">// game · guess_the_number</div>
         <h1 className="font-mono text-xl font-semibold tracking-tight text-heading">
-          guess bob's score<span className="caret align-middle" />
+          guess bob's score
         </h1>
         <RichText
           className="prose-sans mt-1 text-sm text-text-muted"
