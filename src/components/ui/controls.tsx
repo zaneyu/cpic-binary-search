@@ -13,9 +13,10 @@ export function Button({
 }: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: Variant }) {
   const base =
     'inline-flex h-9 items-center justify-center gap-1.5 rounded-[3px] px-3.5 font-mono text-[13px] ' +
+    'cursor-pointer touch-manipulation ' +
     'pointer-coarse:min-h-11 pointer-coarse:px-4 ' +
     'transition-[background,border-color,color,opacity] duration-150 ' +
-    'active:translate-y-px disabled:pointer-events-none disabled:opacity-35 ' +
+    'active:translate-y-px disabled:cursor-not-allowed disabled:pointer-events-none disabled:opacity-35 ' +
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-bg'
   const styles: Record<Variant, string> = {
     primary: 'bg-accent text-bg font-medium hover:opacity-90',
@@ -89,7 +90,7 @@ export function Segmented<T extends string>({
             tabIndex={active ? 0 : -1}
             onClick={() => onChange(o.value)}
             className={cn(
-              'relative inline-flex items-center justify-center rounded-t-[3px] px-3.5 py-2 font-mono text-[13px] transition-colors',
+              'relative inline-flex cursor-pointer touch-manipulation items-center justify-center rounded-t-[3px] px-3.5 py-2 font-mono text-[13px] transition-colors',
               'pointer-coarse:min-h-11',
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent/60',
               active ? 'text-accent' : 'text-text-muted hover:text-text',
@@ -122,7 +123,7 @@ export function TextInput({
       ref={ref}
       className={cn(
         'h-9 rounded-[3px] border border-line-strong bg-surface-muted px-2.5 font-mono text-[13px] text-text outline-none',
-        'pointer-coarse:min-h-11',
+        'touch-manipulation pointer-coarse:min-h-11 pointer-coarse:text-base',
         'transition-colors focus:border-accent focus:ring-1 focus:ring-accent/40',
         className,
       )}
@@ -166,7 +167,7 @@ export function Switch({
       role="switch"
       aria-checked={checked}
       onClick={() => onChange(!checked)}
-      className="inline-flex items-center gap-1.5 rounded-[2px] py-1 font-mono text-[12px] text-text-muted hover:text-text pointer-coarse:min-h-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+      className="inline-flex cursor-pointer touch-manipulation items-center gap-1.5 rounded-[2px] py-1 font-mono text-[12px] text-text-muted hover:text-text pointer-coarse:min-h-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
     >
       <span className={cn('select-none', checked ? 'text-accent' : 'text-text-hint')}>
         [{checked ? 'x' : ' '}]

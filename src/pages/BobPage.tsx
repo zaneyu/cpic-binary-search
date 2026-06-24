@@ -121,6 +121,7 @@ export function BobPage() {
         />
       </header>
 
+      <h2 className="sr-only">Play</h2>
       <div className="relative overflow-hidden rounded-[3px] border border-line-strong bg-surface p-6">
         {state.gameOver && <Confetti />}
         <Characters

@@ -122,7 +122,10 @@ export function BstaView({ active }: { active: boolean }) {
         />
       </header>
 
-      <section className="rounded-[3px] border border-line-strong bg-surface p-4">
+      <section aria-labelledby="bsta-problem-heading" className="rounded-[3px] border border-line-strong bg-surface p-4">
+        <h2 id="bsta-problem-heading" className="sr-only">
+          Problem and check function
+        </h2>
         <Segmented<ProblemKey>
           groupId="bsta-problem"
           ariaLabel="Problem"
@@ -142,7 +145,7 @@ export function BstaView({ active }: { active: boolean }) {
             <label key={p.id} className="rounded-[3px] border border-line bg-surface px-2.5 py-2">
               <span className="mb-1 block text-[11px] text-text-muted">{p.label}</span>
               <select
-                className="h-8 w-full rounded-[2px] border border-line-strong bg-surface-muted px-2 font-mono text-[13px] text-text outline-none transition-colors pointer-coarse:min-h-11 focus:border-accent focus:ring-1 focus:ring-accent/40"
+                className="h-8 w-full cursor-pointer touch-manipulation rounded-[2px] border border-line-strong bg-surface-muted px-2 font-mono text-[13px] text-text outline-none transition-colors pointer-coarse:min-h-11 pointer-coarse:text-base focus:border-accent focus:ring-1 focus:ring-accent/40"
                 value={values[p.id] ?? p.value}
                 onChange={(e) => setValues((v) => ({ ...v, [p.id]: e.target.value }))}
               >
@@ -174,7 +177,7 @@ export function BstaView({ active }: { active: boolean }) {
             spellCheck={false}
             value={fnText}
             onChange={(e) => setFnText(e.target.value)}
-            className="min-h-[60px] w-full resize-y rounded-[2px] border border-line-strong bg-surface-muted px-2.5 py-2 font-mono text-xs leading-[1.55] text-text outline-none transition-colors focus:border-accent focus:ring-1 focus:ring-accent/40"
+            className="min-h-[60px] w-full resize-y touch-manipulation rounded-[2px] border border-line-strong bg-surface-muted px-2.5 py-2 font-mono text-xs leading-[1.55] text-text outline-none transition-colors pointer-coarse:text-[16px] focus:border-accent focus:ring-1 focus:ring-accent/40"
           />
         </div>
       )}
@@ -201,6 +204,7 @@ export function BstaView({ active }: { active: boolean }) {
         <span className="text-text-muted">←</span> back · <span className="text-text-muted">R</span> reset
       </p>
 
+      <h2 className="sr-only">Monotonicity and number-line visualization</h2>
       <div className="cpic-scroll overflow-x-auto rounded-[3px] border border-line-strong bg-surface px-5 pb-3 pt-4">
         <div className="mb-2 flex items-center justify-between font-mono text-[11px] text-text-muted">
           <span className="tracking-wide">check(x) for each value of x</span>

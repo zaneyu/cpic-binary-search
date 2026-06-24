@@ -57,9 +57,17 @@ export function MonotonicityCurve({ lo, hi, probed, showAll, check }: Props) {
             : result === false
               ? 'bg-danger/30 border-t-[1.5px] border-danger'
               : 'bg-surface-muted border-t border-dashed border-line-strong'
+        const label =
+          result === true
+            ? `check(${x}) = true${isProbed ? ' · probed' : ''}`
+            : result === false
+              ? `check(${x}) = false${isProbed ? ' · probed' : ''}`
+              : `check(${x}) — not yet tested`
         return (
           <motion.div
             key={x}
+            title={label}
+            aria-label={label}
             className={cn('absolute bottom-0 origin-bottom', cls, isProbed && 'ring-[1.5px] ring-inset ring-highlight')}
             style={{ left: `${i * colW}%`, width: `${colW}%`, height: h }}
             initial={{ scaleY: 0.3, opacity: 0 }}

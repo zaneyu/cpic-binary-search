@@ -146,7 +146,10 @@ export function BinarySearchView({ active }: { active: boolean }) {
         {hint}
       </p>
 
-      <section className="rounded-[3px] border border-line-strong bg-surface p-4">
+      <section aria-labelledby="search-mode-heading" className="rounded-[3px] border border-line-strong bg-surface p-4">
+        <h2 id="search-mode-heading" className="sr-only">
+          Search mode and code
+        </h2>
         <Segmented<Mode>
           groupId="search-mode"
           ariaLabel="Search mode"
@@ -204,6 +207,7 @@ export function BinarySearchView({ active }: { active: boolean }) {
         <span className="text-text-muted">enter</span> loads the array
       </p>
 
+      <h2 className="sr-only">Array visualization</h2>
       <ArrayTrack
         arr={arr}
         mode={mode}
