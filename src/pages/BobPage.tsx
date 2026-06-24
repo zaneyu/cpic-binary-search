@@ -111,7 +111,6 @@ export function BobPage() {
   return (
     <div className="space-y-4">
       <header className="space-y-1">
-        <div className="font-mono text-[12px] text-text-hint">// game · guess_the_number</div>
         <h1 className="font-mono text-xl font-semibold tracking-tight text-heading">
           guess bob's score
         </h1>

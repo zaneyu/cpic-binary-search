@@ -110,7 +110,6 @@ export function BstaView({ active }: { active: boolean }) {
   return (
     <div className="space-y-4">
       <header className="space-y-1">
-        <div className="font-mono text-[12px] text-text-hint">// search · binary_search_answer.cpp</div>
         <h1 className="font-mono text-xl font-semibold tracking-tight text-heading">
           binary search the answer
         </h1>
