@@ -111,7 +111,7 @@ export function BobPage() {
   return (
     <div className="space-y-4">
       <header className="space-y-1">
-        <h1 className="font-mono text-xl font-semibold tracking-tight text-heading">
+        <h1 className="font-mono text-xl font-semibold tracking-tight text-accent-3">
           guess bob's score
         </h1>
         <RichText

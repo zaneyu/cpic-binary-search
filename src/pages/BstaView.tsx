@@ -96,9 +96,9 @@ export function BstaView({ active }: { active: boolean }) {
   const check = useMemo(() => getCheck(params), [params])
 
   const chips: Chip[] = [
-    { label: 'l', value: !hasParams || s.l > s.r ? '—' : s.l },
-    { label: 'mid', value: s.mid === -1 ? '—' : s.mid },
-    { label: 'r', value: !hasParams || s.l > s.r ? '—' : s.r },
+    { label: 'l', value: !hasParams || s.l > s.r ? '—' : s.l, tone: 'idx' },
+    { label: 'mid', value: s.mid === -1 ? '—' : s.mid, tone: 'mid' },
+    { label: 'r', value: !hasParams || s.l > s.r ? '—' : s.r, tone: 'idx' },
     { label: 'ans', value: s.ans === -1 ? '-1' : s.ans, tone: 'ans' },
     {
       label: 'check(mid)',
@@ -110,7 +110,7 @@ export function BstaView({ active }: { active: boolean }) {
   return (
     <div className="space-y-4">
       <header className="space-y-1">
-        <h1 className="font-mono text-xl font-semibold tracking-tight text-heading">
+        <h1 className="font-mono text-xl font-semibold tracking-tight text-accent-2">
           binary search the answer
         </h1>
         <RichText

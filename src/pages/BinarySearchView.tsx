@@ -99,17 +99,17 @@ export function BinarySearchView({ active }: { active: boolean }) {
   }
 
   const chips: Chip[] = [
-    { label: 'l', value: s.l > s.r ? '—' : s.l },
-    { label: 'mid', value: s.mid === -1 ? '—' : s.mid },
-    { label: 'r', value: s.l > s.r ? '—' : s.r },
+    { label: 'l', value: s.l > s.r ? '—' : s.l, tone: 'idx' },
+    { label: 'mid', value: s.mid === -1 ? '—' : s.mid, tone: 'mid' },
+    { label: 'r', value: s.l > s.r ? '—' : s.r, tone: 'idx' },
     { label: 'ans', value: s.ans === -1 ? '-1' : s.ans, tone: 'ans' },
-    { label: 'steps', value: s.steps },
+    { label: 'steps', value: s.steps, tone: 'count' },
   ]
 
   return (
     <div className="space-y-4">
       <header className="space-y-1">
-        <h1 className="font-mono text-xl font-semibold tracking-tight text-heading">
+        <h1 className="font-mono text-xl font-semibold tracking-tight text-accent">
           binary search
         </h1>
         <RichText

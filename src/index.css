@@ -20,8 +20,10 @@
   /* ambient backdrop */
   --dot: rgba(180, 200, 235, 0.05);
   --scan: rgba(180, 200, 235, 0.018);
-  --glow: rgba(108, 182, 255, 0.12);
-  --glow-2: rgba(210, 168, 255, 0.07);
+  --glow: rgba(108, 182, 255, 0.18);
+  --glow-2: rgba(210, 168, 255, 0.13);
+  --glow-3: rgba(255, 154, 139, 0.11);
+  --glow-4: rgba(126, 231, 135, 0.09);
   /* animated fills (kept literal so Motion can interpolate; theme-aware) */
   --fill-success: rgba(126, 231, 135, 0.12);
   --fill-mid: rgba(227, 179, 65, 0.12);
@@ -58,8 +60,10 @@
     /* ambient backdrop */
     --dot: rgba(31, 35, 40, 0.05);
     --scan: rgba(31, 35, 40, 0.015);
-    --glow: rgba(9, 105, 218, 0.07);
-    --glow-2: rgba(130, 80, 223, 0.05);
+    --glow: rgba(9, 105, 218, 0.11);
+    --glow-2: rgba(130, 80, 223, 0.09);
+    --glow-3: rgba(207, 90, 72, 0.07);
+    --glow-4: rgba(26, 127, 55, 0.06);
     /* animated fills (theme-aware) */
     --fill-success: rgba(26, 127, 55, 0.13);
     --fill-mid: rgba(154, 103, 0, 0.13);
@@ -152,7 +156,9 @@ body {
   inset: 0;
   background:
     radial-gradient(70% 48% at 50% -12%, var(--glow) 0%, transparent 62%),
-    radial-gradient(46% 34% at 82% -6%, var(--glow-2) 0%, transparent 60%);
+    radial-gradient(46% 34% at 82% -6%, var(--glow-2) 0%, transparent 60%),
+    radial-gradient(48% 38% at 10% 4%, var(--glow-3) 0%, transparent 60%),
+    radial-gradient(60% 50% at 72% 112%, var(--glow-4) 0%, transparent 60%);
 }
 
 /* hairline horizon where the lit sky meets the page — terminal seam */
