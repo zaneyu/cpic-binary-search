@@ -1,6 +1,7 @@
 import { motion } from 'motion/react'
 import { cn } from '../../lib/cn'
 import { useCalmMotion } from '../../lib/motion'
+import { highlight } from '../../lib/highlight'
 
 /** C++ pseudocode with a line-number gutter and an editor-style active line. */
 export function CodePanel({
@@ -36,9 +37,7 @@ export function CodePanel({
             <span className="relative w-9 shrink-0 select-none pr-2.5 text-right text-text-hint/70">
               {i + 1}
             </span>
-            <span className={cn('relative whitespace-pre pr-4', active ? 'text-text' : 'text-text-muted')}>
-              {line || ' '}
-            </span>
+            <span className="relative whitespace-pre pr-4 text-text">{highlight(line)}</span>
           </div>
         )
       })}

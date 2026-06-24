@@ -12,7 +12,9 @@ import { useStepper } from '../hooks/useStepper'
 import { RichText } from '../lib/math'
 import { PROBLEM_META, parseProblem, type ProblemKey } from '../data/bstaContent'
 import { Button, Segmented, SpeedSlider, Switch, TextInput } from '../components/ui/controls'
+import { IconNext, IconPlay, IconPrev, IconReset } from '../components/ui/icons'
 import { CodePanel } from '../components/viz/CodePanel'
+import { Legend } from '../components/viz/Legend'
 import { NumberLine } from '../components/viz/NumberLine'
 import { MonotonicityCurve } from '../components/viz/MonotonicityCurve'
 import { StatChips, type Chip } from '../components/viz/StatChips'
@@ -112,7 +114,7 @@ export function BstaView({ active }: { active: boolean }) {
           binary search the answer<span className="caret align-middle" />
         </h1>
         <RichText
-          className="mt-1 font-mono text-[13px] leading-relaxed text-text-muted"
+          className="prose-sans mt-1 max-w-[68ch] text-sm leading-relaxed text-text-muted"
           html={
             'Sometimes the thing you\'re looking for isn\'t in a list — it\'s a number in a range $[l, r]$. You have a $\\text{check}(x)$ that says "yes that works" or "no it doesn\'t"; pick a guess $x$, test it, narrow down. Works whenever $\\text{check}$ has a clean cutoff: once it flips, it never flips back.'
           }
@@ -128,7 +130,7 @@ export function BstaView({ active }: { active: boolean }) {
           options={(['logs', 'ducks', 'custom'] as ProblemKey[]).map((k) => ({ value: k, label: PROBLEM_META[k].label }))}
         />
         <RichText
-          className="mt-2.5 text-[13px] leading-relaxed text-text-muted [&_code]:rounded [&_code]:bg-surface-muted [&_code]:px-1.5 [&_code]:font-mono [&_code]:text-xs [&_code]:text-accent [&_em]:text-text-muted"
+          className="prose-sans mt-2.5 max-w-[70ch] text-sm leading-relaxed text-text-muted [&_code]:rounded-[2px] [&_code]:bg-surface-muted [&_code]:px-1.5 [&_code]:font-mono [&_code]:text-xs [&_code]:text-accent [&_em]:text-text-muted"
           html={meta.desc}
         />
       </section>
@@ -179,16 +181,24 @@ export function BstaView({ active }: { active: boolean }) {
       <CodePanel id="bsta" lines={codeLines} activeLine={s.activeLine} />
 
       <div className="flex flex-wrap items-center gap-2.5">
-        <Button variant="primary" onClick={stepper.play}>
-          Start
+        <Button variant="primary" onClick={stepper.play} title="Auto-play">
+          <IconPlay /> Start
         </Button>
-        <Button onClick={stepper.back} disabled={!stepper.canBack}>
-          ← Back
+        <Button onClick={stepper.back} disabled={!stepper.canBack} title="Back (← key)">
+          <IconPrev /> Back
         </Button>
-        <Button onClick={stepper.step}>Step →</Button>
-        <Button onClick={stepper.reset}>Reset</Button>
+        <Button onClick={stepper.step} title="Step (→ or Space)">
+          <IconNext /> Step
+        </Button>
+        <Button onClick={stepper.reset} title="Reset (R key)">
+          <IconReset /> Reset
+        </Button>
         <SpeedSlider value={4000 - delay} onChange={setDelay} />
       </div>
+      <p className="font-mono text-[11px] text-text-hint">
+        <span className="text-text-muted">→</span> / space step ·{' '}
+        <span className="text-text-muted">←</span> back · <span className="text-text-muted">R</span> reset
+      </p>
 
       <div className="cpic-scroll overflow-x-auto rounded-[3px] border border-line-strong bg-surface px-5 pb-3 pt-4">
         <div className="mb-2 flex items-center justify-between font-mono text-[11px] text-text-muted">
@@ -208,6 +218,16 @@ export function BstaView({ active }: { active: boolean }) {
           trueGoodHi={s.trueGoodHi}
         />
       </div>
+
+      <Legend
+        items={[
+          { swatch: 'bg-accent border-accent', label: '[l, r] window' },
+          { swatch: 'bg-highlight border-highlight', label: 'mid' },
+          { swatch: 'bg-success border-success', label: 'ans' },
+          { swatch: 'bg-success/15 border-success/50', label: 'true region' },
+          { swatch: 'bg-danger/20 border-danger', label: 'false region' },
+        ]}
+      />
 
       <StatChips chips={chips} />
       <StatusBar html={hasParams ? s.statusHtml : `<span style="color:var(--danger);font-weight:500;">${parse.error}</span>`} />

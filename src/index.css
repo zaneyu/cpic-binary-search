@@ -26,6 +26,13 @@
   --warning: #e3b341;  /* amber */
   --highlight: #e3b341; /* amber — mid / numbers */
   --heading: #e6edf3;
+  /* code syntax (GitHub dark) */
+  --code-kw: #ff7b72;
+  --code-fn: #d2a8ff;
+  --code-type: #ffa657;
+  --code-str: #a5d6ff;
+  --code-num: #79c0ff;
+  --code-comment: #8b949e;
 }
 @media (prefers-color-scheme: light) {
   :root {
@@ -47,6 +54,13 @@
     --warning: #9a6700;
     --highlight: #9a6700;
     --heading: #0a0c10;
+    /* code syntax (GitHub light) */
+    --code-kw: #cf222e;
+    --code-fn: #8250df;
+    --code-type: #953800;
+    --code-str: #0a3069;
+    --code-num: #0550ae;
+    --code-comment: #59636e;
   }
 }
 
@@ -69,6 +83,12 @@
   --color-warning: var(--warning);
   --color-highlight: var(--highlight);
   --color-heading: var(--heading);
+  --color-code-kw: var(--code-kw);
+  --color-code-fn: var(--code-fn);
+  --color-code-type: var(--code-type);
+  --color-code-str: var(--code-str);
+  --color-code-num: var(--code-num);
+  --color-code-comment: var(--code-comment);
   --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", "Fira Code", Menlo, Consolas, "Liberation Mono", monospace;
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
 }

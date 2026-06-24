@@ -115,7 +115,7 @@ export function BobPage() {
           guess bob's score<span className="caret align-middle" />
         </h1>
         <RichText
-          className="mt-1 font-mono text-[13px] text-text-muted"
+          className="prose-sans mt-1 text-sm text-text-muted"
           html={'Bob is thinking of a whole number $s$ between $0$ and $100$. Guess it in as few tries as you can!'}
         />
       </header>
@@ -186,7 +186,7 @@ export function BobPage() {
             >
               <RichText
                 html={state.hintHtml}
-                className="rounded-[3px] border border-line-strong bg-surface-muted px-4 py-3 text-center font-mono text-[13px] leading-relaxed text-text-muted [&_code]:rounded-[2px] [&_code]:bg-surface [&_code]:px-1.5 [&_code]:text-xs [&_code]:text-accent"
+                className="prose-sans rounded-[3px] border border-line-strong bg-surface-muted px-4 py-3 text-center text-sm leading-relaxed text-text-muted [&_code]:rounded-[2px] [&_code]:bg-surface [&_code]:px-1.5 [&_code]:font-mono [&_code]:text-xs [&_code]:text-accent"
               />
             </motion.div>
           )}

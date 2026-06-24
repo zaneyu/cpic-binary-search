@@ -13,7 +13,10 @@ import {
   randomArray,
 } from '../data/searchContent'
 import { Button, Segmented, SpeedSlider, TextInput } from '../components/ui/controls'
+import { IconNext, IconPlay, IconPrev, IconReset } from '../components/ui/icons'
+import { highlight } from '../lib/highlight'
 import { ArrayTrack } from '../components/viz/ArrayTrack'
+import { Legend } from '../components/viz/Legend'
 import { CodePanel } from '../components/viz/CodePanel'
 import { StatChips, type Chip } from '../components/viz/StatChips'
 import { StatusBar } from '../components/viz/StatusBar'
@@ -110,7 +113,7 @@ export function BinarySearchView({ active }: { active: boolean }) {
           binary search<span className="caret align-middle" />
         </h1>
         <RichText
-          className="mt-1 font-mono text-[13px] leading-relaxed text-text-muted"
+          className="prose-sans mt-1 max-w-[68ch] text-sm leading-relaxed text-text-muted"
           html={
             'Three ways to search a sorted list. Each takes only $O(\\log n)$ steps — far faster than checking elements one by one ($O(n)$). We keep two markers $l$ and $r$ for the part still to check, and loop while $l \\le r$. The highlighted line is the one running right now.'
           }
@@ -141,17 +144,19 @@ export function BinarySearchView({ active }: { active: boolean }) {
           options={(['search', 'lower', 'upper'] as Mode[]).map((m) => ({ value: m, label: MODE_LABELS[m] }))}
         />
         <RichText
-          className="mt-2.5 text-[13px] leading-relaxed text-text-muted [&_code]:rounded [&_code]:bg-surface-muted [&_code]:px-1.5 [&_code]:font-mono [&_code]:text-xs [&_code]:text-accent"
+          className="prose-sans mt-2.5 max-w-[68ch] text-sm leading-relaxed text-text-muted [&_code]:rounded-[2px] [&_code]:bg-surface-muted [&_code]:px-1.5 [&_code]:font-mono [&_code]:text-xs [&_code]:text-accent"
           html={MODE_DESCS[mode]}
         />
-        <div className="mt-2.5">
+        <div className="mt-3">
           <CodePanel id="search" lines={CODE_TEMPLATES[mode]} activeLine={s.activeLine} />
         </div>
         {STL_TEMPLATES[mode] && (
           <div className="mt-3">
-            <div className="mb-1 text-xs text-text-muted">Or skip the loop — C++ already has this built in:</div>
-            <pre className="cpic-scroll overflow-x-auto rounded-md border border-line bg-bg px-3 py-3 font-mono text-xs leading-[1.55] text-text-muted">
-              {STL_TEMPLATES[mode]}
+            <div className="prose-sans mb-1.5 text-xs text-text-muted">Or skip the loop — C++ already has this built in:</div>
+            <pre className="cpic-scroll overflow-x-auto rounded-[3px] border border-line-strong bg-surface-muted px-3 py-3 font-mono text-xs leading-[1.6] text-text">
+              {STL_TEMPLATES[mode]!.split('\n').map((ln, i) => (
+                <div key={i}>{highlight(ln)}</div>
+              ))}
             </pre>
           </div>
         )}
@@ -165,16 +170,25 @@ export function BinarySearchView({ active }: { active: boolean }) {
           value={targetStr}
           onChange={(e) => setTargetStr(e.target.value)}
         />
-        <Button variant="primary" onClick={stepper.play}>
-          Start
+        <Button variant="primary" onClick={stepper.play} title="Auto-play">
+          <IconPlay /> Start
         </Button>
-        <Button onClick={stepper.back} disabled={!stepper.canBack}>
-          ← Back
+        <Button onClick={stepper.back} disabled={!stepper.canBack} title="Back (← key)">
+          <IconPrev /> Back
         </Button>
-        <Button onClick={stepper.step}>Step →</Button>
-        <Button onClick={stepper.reset}>Reset</Button>
+        <Button onClick={stepper.step} title="Step (→ or Space)">
+          <IconNext /> Step
+        </Button>
+        <Button onClick={stepper.reset} title="Reset (R key)">
+          <IconReset /> Reset
+        </Button>
         <SpeedSlider value={4000 - delay} onChange={setDelay} />
       </div>
+      <p className="font-mono text-[11px] text-text-hint">
+        <span className="text-text-muted">→</span> / space step ·{' '}
+        <span className="text-text-muted">←</span> back · <span className="text-text-muted">R</span> reset ·{' '}
+        <span className="text-text-muted">enter</span> loads the array
+      </p>
 
       <ArrayTrack
         arr={arr}
@@ -186,6 +200,15 @@ export function BinarySearchView({ active }: { active: boolean }) {
         finished={s.finished}
         foundIdx={s.foundIdx}
         excluded={s.excluded}
+      />
+
+      <Legend
+        items={[
+          { swatch: 'bg-accent/10 border-accent/50', label: '[l, r] window' },
+          { swatch: 'bg-highlight/15 border-highlight', label: 'mid' },
+          { swatch: 'bg-success/15 border-success', label: 'answer' },
+          { swatch: 'border-line opacity-50', label: 'discarded' },
+        ]}
       />
 
       <StatChips chips={chips} />
