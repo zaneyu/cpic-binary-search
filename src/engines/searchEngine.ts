@@ -29,6 +29,10 @@ export function initSearch(arr: number[], mode: Mode, target: number): SearchSta
       : mode === 'lower'
         ? 'counting elements &lt; x'
         : 'counting elements &gt; x'
+  // For lower_bound / upper_bound, ans defaults to n (the not-found position,
+  // i.e. "all elements are on the other side"). Equality search leaves ans = -1
+  // (it never uses ans).
+  const ans = mode === 'search' ? -1 : arr.length
   return {
     arr,
     mode,
@@ -36,13 +40,13 @@ export function initSearch(arr: number[], mode: Mode, target: number): SearchSta
     l: 0,
     r: arr.length - 1,
     mid: -1,
-    ans: -1,
+    ans,
     steps: 0,
     finished: false,
     foundIdx: -1,
     excluded: new Set<number>(),
     activeLine: null,
-    statusHtml: `Starting ${bold(modeFriendly)}. We begin with $l = 0$, $r = ${arr.length - 1}$, $\\text{ans} = -1$.`,
+    statusHtml: `Starting ${bold(modeFriendly)}. We begin with $l = 0$, $r = ${arr.length - 1}$, $\\text{ans} = ${ans}$.`,
   }
 }
 
@@ -104,8 +108,10 @@ function stepBound(s: SearchState): SearchState {
     s.activeLine = null
     s.mid = -1
     const cmpWord = mode === 'lower' ? 'at least' : 'greater than'
-    if (s.ans === -1) {
-      s.statusHtml = `<span style="color:var(--warning);font-weight:500;">Done — $l$ passed $r$.</span> No element is ${cmpWord} $${target}$, so $\\text{${boundName}} = -1$. (Some libraries return $n = ${s.arr.length}$ instead — same idea, just a different convention.)`
+    const allWord = mode === 'lower' ? 'less than' : 'at most'
+    const n = s.arr.length
+    if (s.ans === n) {
+      s.statusHtml = `<span style="color:var(--success);font-weight:500;">Done — $l$ passed $r$.</span> No element is ${cmpWord} $${target}$, so $\\text{${boundName}} = n = ${n}$ — all ${n} elements are ${allWord} $${target}$. Took ${stepsWord(s.steps)}.`
     } else {
       s.statusHtml = `<span style="color:var(--success);font-weight:500;">Done — $l$ passed $r$.</span> $\\text{${boundName}} = ${s.ans}$. $\\text{arr}[${s.ans}] = ${s.arr[s.ans]}$ is the first element ${cmpWord} $${target}$. Took ${stepsWord(s.steps)}.`
     }

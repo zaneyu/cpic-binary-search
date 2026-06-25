@@ -44,10 +44,12 @@ describe('lower_bound', () => {
     expect(s.ans).toBe(0)
   })
 
-  it('ans = -1 when no element qualifies, with the n-convention note', () => {
+  it('ans defaults to n, and stays n when no element qualifies', () => {
+    // initial ans is n (the not-found / count-when-all-smaller position)
+    expect(initSearch(ARR, 'lower', 100).ans).toBe(ARR.length)
+    // x larger than everything: no element >= x, so lower_bound = n = 7
     const s = run(ARR, 'lower', 100)
-    expect(s.ans).toBe(-1)
-    expect(s.statusHtml).toContain('Some libraries return')
+    expect(s.ans).toBe(ARR.length)
   })
 })
 
@@ -62,6 +64,12 @@ describe('upper_bound', () => {
     // first element > 2 is index 2 (value 3)
     const s = run(ARR, 'upper', 2)
     expect(s.ans).toBe(2)
+  })
+
+  it('ans = n when nothing is greater than x', () => {
+    // x >= max: no element > x, so upper_bound = n = 7 (0 elements greater)
+    const s = run(ARR, 'upper', 8)
+    expect(s.ans).toBe(ARR.length)
   })
 })
 

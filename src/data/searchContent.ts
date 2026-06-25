@@ -27,7 +27,7 @@ export const CODE_TEMPLATES: Record<Mode, string[]> = {
     'return -1;',
   ],
   lower: [
-    'int l = 0, r = n - 1, ans = -1;',
+    'int l = 0, r = n - 1, ans = n;',
     'while (l <= r) {',
     '    int mid = (l + r) / 2;',
     '    if (arr[mid] >= x) {',
@@ -39,7 +39,7 @@ export const CODE_TEMPLATES: Record<Mode, string[]> = {
     '}',
   ],
   upper: [
-    'int l = 0, r = n - 1, ans = -1;',
+    'int l = 0, r = n - 1, ans = n;',
     'while (l <= r) {',
     '    int mid = (l + r) / 2;',
     '    if (arr[mid] > x) {',
